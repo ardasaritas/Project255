@@ -1,5 +1,4 @@
-# Project255
-CTIS255 Term Project</br>
+# CTIS255 Term Project
 Participants</br>
 Yağız Çetin</br>
 Arda Sarıtaş</br>
