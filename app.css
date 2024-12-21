@@ -1,0 +1,105 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+main {
+    display: flex;
+    margin: 0 20px;
+    border: 1px solid gray;
+    align-self: center;
+    flex-direction: column;
+    height: 100vh;
+}
+
+#top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+#title {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+}
+
+h1 {
+    font-size: 25px;
+    margin-left: 5px;
+}
+
+h2 {
+    font-size: 15px;
+    font-weight: normal;
+}
+
+#user {
+    display: flex;
+    justify-self: right;
+    align-items: center;
+    gap: 5px;
+    margin-right: 10px;
+}
+
+#user button {
+    padding: 5px;
+    border: 1px solid black;
+    border-radius: 5px;
+    background-color: white;
+    margin-left: 10px;
+}
+
+#profiles {
+    display: flex;
+    flex: 1;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+}
+
+.profile {
+    display: flex;
+    flex-direction: column;
+    background-color: lightgrey;
+    padding: 10px;
+    gap: 5px;
+    border-radius: 5px;
+    align-items: center;
+    position: relative;
+}
+
+.profile:hover {
+    background-color: darkgray;
+}
+
+.profile button {
+    background-color: blue;
+    color: white;
+    font-size: 10px;
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+    position: absolute;
+    right: 2px;
+    top: 2px;
+}
+
+.profile button:hover {
+    width: 20px;
+    height: 20px;
+}
+
+.profile i {
+    padding: 15px;
+}
+
+.profile span {
+    font-size: 12px;
+}
+
+button#profile {
+    margin: 10px;
+    padding: 5px;
+}
