@@ -25,7 +25,7 @@ function renderPage() {
             </div>
             <div id="user"></div>
         </div>
-        <div id="profiles"></div>
+        <div id="middle"></div>
         <div id="footer"><button type="button" id="profile">+ New Profile</button></div>
     </main>`)
     renderProfiles()
@@ -40,26 +40,35 @@ function renderProfile() {
                 Logout
             </button>`)
     }
+    else {
+        $("#user *").remove()
+    }
 }
 
 function renderProfiles() {
-    $("#profiles").html("")
+    $("#middle").html("")
     for (user of states.users) {
-        $("#profiles").append(`<div class="profile">
+        $("#middle").append(`<div class="profile">
             <button type="button">X</button>
             <i class="fa-solid fa-user fa-xl"></i>
             <span>${user.name}</span></div>`)
     }
 }
 
-$(".profile").on("click", function() {
+$("main").on("click", ".profile", function() {
     current_profile = $(this).children("span").text()
+    $("#middle").html("")
     update([renderProfile])
 })
 
-$("#profiles").on("click", ".profile button", function(e) {
+$("#root").on("click", "#user button", function(e) {
+    current_profile = null
+    $("#middle").html("")
+    update([renderProfile, renderProfiles])
+})
+
+$("#middle").on("click", ".profile button", function(e) {
     states.users = states.users.filter(user => user.name !== $(this).parent().children("span").text())
-    console.log(e)
     e.stopPropagation()
     update([renderProfiles])
 })
@@ -84,6 +93,7 @@ $("#root").on("click", "#prompt button", function() {
     let name = $(this).parent().children("input").val()
     let user = {name, wallet: {cash: 1000}}
     states.users.push(user)
+    //localStorage.setItem(states, JSON.parse(states))
     $("*:not(#prompt):not(#prompt *):not(.profile button)").css("background-color", "");
     $("#prompt").remove()
     update([renderProfiles])
