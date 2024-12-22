@@ -68,7 +68,7 @@ h2 {
     width: 45px;
 }
 
-#profiles {
+#middle {
     display: flex;
     flex: 1;
     justify-content: center;
