@@ -65,8 +65,26 @@ $("#profiles").on("click", ".profile button", function(e) {
 })
 
 $("main").on("click", "#footer button", function() {
-    let name = prompt("Enter user name")
-    user = {name: name, wallet: {cash: 1000}}
+    $("#root").append(`<div id="prompt">
+        <h3>New Profile</h3>
+        <input type="text" name="new_profile" id="new_profile" placeholder="Enter new profile...">
+        <button type="button">Add</button>
+    </div>`)
+    $("*:not(#prompt):not(#prompt *):not(.profile button)").css("background-color", "#3e3e3e")
+    $("#prompt input").focus()
+})
+
+$("#root").on("keydown keyup", "#prompt input", function(e) {
+    if (e.key == "Enter") {
+        $(this).parent().children("button").click()
+    }
+})
+
+$("#root").on("click", "#prompt button", function() {
+    let name = $(this).parent().children("input").val()
+    let user = {name, wallet: {cash: 1000}}
     states.users.push(user)
+    $("*:not(#prompt):not(#prompt *):not(.profile button)").css("background-color", "");
+    $("#prompt").remove()
     update([renderProfiles])
 })
