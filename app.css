@@ -331,14 +331,14 @@ button#profile {
 }
 
 #cryptoContainer {
-    height: 600px;
-    width: 800px;
+    height: 800px;
+    width: 1205px;
     border: 1px solid #c0c0c0;
     border-radius: 5px 5px 0px;
 }
 
 #coins {
-    width: 800px;
+    width: 1205px;
     height: 60px;
     display: flex;
     flex-direction: row;
@@ -356,7 +356,7 @@ button#profile {
 }
 
 #curCoin {
-    width: 800px;
+    width: 1205px;
     display: flex;
     flex-direction: row;
     justify-content: start;
@@ -373,4 +373,45 @@ button#profile {
 
 #curCoin img {
     width: 30px;
+}
+
+.chart { width: 1205px; height: 500px;  position: relative; border-bottom: 1px solid #c0c0c0; /* remove border later*/}
+
+.stick { border:1px solid black ; width: 2px ; position: absolute ;}
+
+.bar { position: absolute; width: 10px; border: 1px solid black; z-index:1 ;}
+
+#coinData {
+    color: #999;
+}
+
+
+.greyLine {
+    position: absolute; /* Position it absolutely within the chart container */
+    line-height: 20px; /* The height of the line */
+    border-bottom: 2px dashed grey; /* Dashed line effect with grey color */
+    width: 1205px; /* Make it span the entire width of the chart container */
+    z-index: 10; /* Make sure the line is above the bars */
+    text-align: right;
+    color: #999;
+}
+
+.upperLabel {
+    position: absolute; /* Required to position it inside the container */
+    top: 0;             /* Position at the top */
+    right: 25px;        /* Slight padding from the right edge */
+    color: #999;       /* Or another contrasting color */
+    background: white;  /* Optional: add a background for visibility */
+ /* Padding for readability */    /* Adjust font size */
+    z-index: 10;        /* Ensure it's above other elements */
+}
+
+.bottomLabel {
+    position: absolute; /* Required to position it inside the container */
+    bottom: 0px;             /* Position at the top */
+    right: 25px;        /* Slight padding from the right edge */
+    color: #999;       /* Or another contrasting color */
+    background: white;  /* Optional: add a background for visibility */
+      /* Padding for readability */    /* Adjust font size */
+    z-index: 10;        /* Ensure it's above other elements */
 }

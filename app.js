@@ -1,5 +1,4 @@
 let states = {active: null}
-console.log(states);
 let current_profile = null
 
 let storedData = localStorage.getItem("states") 
@@ -7,7 +6,6 @@ states =  storedData ? JSON.parse( storedData) :  { active: null, users : [] }
 renderPage()
 
 renderPage()
-console.log("Loaded states:", states);
 function update(fns) {
     for (fn of fns) {
         fn()
@@ -57,6 +55,7 @@ function renderTradingPage(user) {
                             </div>
     
                         <div id="curCoin"></div>
+                        <div class="chart"></div>
                         </div>
                      `);
 
@@ -70,10 +69,23 @@ function renderProfile() {
     if (current_profile !== null) {
         const user = states.users.find(user => user.name === current_profile);
         renderTradingPage(user)
-        renderCurCoin("Bitcoin", "./images/btc.png");
+        renderCurCoin("btc", "Bitcoin", "./images/btc.png");
         const $bitcoin = $("#coins img[src='./images/btc.png']"); 
         startPulsating($bitcoin);
         currentAnimatingCoin = $bitcoin;
+        
+        // When the profile is opened, initialize it with btc
+        if(user.currentDay < 120) {
+            for (let i = 1; i <= Math.min(user.currentDay, 120); i++) {
+                renderChartSliding("btc", i);
+            }
+        }
+        else {
+            for (let i = user.currentDay - 365; i <= Math.min(user.currentDay, 365); i++) {
+                renderChartSliding("btc", i);
+            }
+        }
+        
         $("#user").html(`<i class="fa-solid fa-user fa-xs"></i>
             <span>${current_profile}</span>
             <button type="button">
@@ -90,10 +102,10 @@ function renderProfile() {
     }
 }
 
-function renderCurCoin(coinName, coinImg) {
+function renderCurCoin(coinId, coinName, coinImg) {
     $("#curCoin").html(`
         <div id="curCoin">
-            <img src="${coinImg}" alt="${coinName}" id="${coinName}">
+            <img src="${coinImg}" data-name="${coinName}" id="${coinId}">
             <p>${coinName}</p>
         </div>
     `);
@@ -107,6 +119,135 @@ function renderProfiles() {
             <i class="fa-solid fa-user fa-xl"></i>
             <span>${user.name}</span></div>`)
     }
+}
+
+function renderChartSliding(selectedCoin, day) {
+    const chartContainer = $(".chart");
+    const chartHeight = 500; // Height of the chart container
+
+    // Find the selected coin's data for all days to compute its range
+    const allCoinData = market.map(dayData =>
+        dayData.coins.find(coin => coin.code === selectedCoin)
+    ).filter(Boolean); // Filter out null/undefined entries
+
+    const minPrice = Math.min(...allCoinData.map(coin => Math.min(coin.low, coin.open, coin.close)));
+    const maxPrice = Math.max(...allCoinData.map(coin => Math.max(coin.high, coin.open, coin.close)));
+
+    if (minPrice === maxPrice) {
+        return;
+    }
+
+    // Normalize a given value to fit within the chart height
+    const normalize = value => ((value - minPrice) / (maxPrice - minPrice)) * chartHeight;
+
+    // If day exceeds 120, apply sliding window logic
+    if (day > 120) {
+        chartContainer.children(".stick:first").remove();
+        chartContainer.children(".bar:first").remove();
+
+        chartContainer.children().each(function () {
+            if(!($(this).hasClass("upperLabel") || $(this).hasClass("bottomLabel"))) {
+                const currentLeft = parseInt($(this).css("left"), 10);
+                $(this).css("left", `${currentLeft - 10}px`); // Shift left by 10px
+            }
+        });
+
+        $(".upperLabel").css("left", "-10")
+        $(".bottomLabel").css("left", "-10")
+        
+
+    }
+
+    // Get data for the selected coin on the current day
+    const dayData = market[day - 1];
+    const coinData = dayData?.coins.find(coin => coin.code === selectedCoin);
+
+    if (!coinData) {
+        return;
+    }
+
+    const { open: entry, close: exit, high, low } = coinData;
+
+    // Normalize values
+    const normalizedLow = normalize(low);
+    const normalizedHigh = normalize(high);
+    const normalizedBarBottom = normalize(Math.min(entry, exit));
+    const normalizedBarHeight = Math.abs(normalize(entry) - normalize(exit));
+
+    const color = entry < exit ? "green" : "red";
+
+    // Calculate X-position for the current day
+    const x = day > 120 ? (120 - 1) * 10 + 5: (day - 1) * 10 + 5;
+
+    // Add the stick
+    chartContainer.append(
+        `<div class='stick' style='height:${normalizedHigh - normalizedLow}px; bottom:${normalizedLow}px; left:${x}px;'></div>`
+    );
+
+    // Add the bar
+    chartContainer.append(
+        `<div class='bar' data-day="${day}" data-date="${user.currentDate}" style='background:${color}; bottom:${normalizedBarBottom}px; left:${x - 4}px; height:${normalizedBarHeight}px;'></div>`
+    );
+
+
+    // --- Add the grey line only if it doesn't exist ---
+    if ($(".greyLine").length === 0) {
+        const greyLine = $("<p>", {
+            class: "greyLine",
+            left: "0px"
+        });
+
+        // Append the grey line to the chart container
+        chartContainer.append(greyLine);
+    }
+
+    let posGreyLine; 
+    let text; 
+    if (color == "green") {
+        posGreyLine = normalizedBarBottom + normalizedBarHeight
+        text = `$${entry} `
+    }
+    else {
+        posGreyLine = normalizedBarBottom
+        text = `$${exit} `
+    }
+
+    // --- Update the position of the grey line ---
+    $(".greyLine").css("bottom", `${posGreyLine}px`)
+                  .css("padding-right", "25px") // to increase the readability a little bit
+                  .text(text)
+                  .css("left", "0px")
+
+
+    // Labels
+    if ($(".upperLabel").length === 0) {
+        const upperLbl = $("<div>", {
+            class: "upperLabel",
+            right: "0px"
+        });
+
+        chartContainer.append(upperLbl);
+    }
+      $(".upperLabel").css("top", "-10px")
+                    .text(`$${maxPrice}`)
+                    //.css("right", "20px")
+    // -------------------
+
+    if ($(".bottomLabel").length === 0) {
+        const bottomLbl = $("<div>", {
+            class: "bottomLabel",
+            right: "0px"
+        });
+
+        chartContainer.append(bottomLbl);
+
+    }
+    
+    $(".bottomLabel").css("bottom", "-10px")
+                   .text(`$${minPrice}`)
+                   //.css("right", "20px")
+
+
 }
 
 $("main").on("click", ".profile", function() {
@@ -146,7 +287,7 @@ $("#root").on("keydown keyup", "#prompt input", function(e) {
 
 $("#root").on("click", "#prompt button", function() {
     let name = $(this).parent().children("input").val()
-    let user = {name, wallet: {cash: 1000}, currentDay : 1, currentDate : "1 January 2021", candleData : [0]}
+    let user = {name, wallet: {cash: 1000}, currentDay : 1, currentDate : "1 January 2021", market : []}
     states.users.push(user)
     //localStorage.setItem(states, JSON.parse(states))
     $("*:not(#prompt):not(#prompt *):not(.profile button)").css("background-color", "");
@@ -168,16 +309,20 @@ $("#root").on("click", "#nextDay", function () {
     if (user && user.currentDay < 365) {
         user.currentDay += 1; // Increment the day
         user.currentDate = getNextDate(user.currentDate);
-        console.log(`Day updated to: ${user.currentDay}`);
+    
         
         // Update the UI
         $("#day").html(`<p>Day ${user.currentDay}</p>`);
         $("#date").html(`<p>${user.currentDate}</p>`);
 
+        const currentCoin = $("#curCoin img").attr("id"); // Get the currently selected coin
+    
+        if (currentCoin) {
+            renderChartSliding(currentCoin, user.currentDay); // Re-render chart
+        }
+
         // Save changes to states
         update([]);
-    } else {
-        console.error("No active user found for updating day.");
     }
 });
 
@@ -246,10 +391,50 @@ $("#root").on("click", "#coins img", function () {
     const coinId = $clickedCoin.attr("id"); // Get the coin's id (e.g., 'ada', 'avax', etc.)
     const coinName = $clickedCoin.data("name"); // Get the coin's name from data-name
     const coinImgSrc = $clickedCoin.attr("src");
-    console.log(coinImgSrc)
     // Dynamically update the curCoin div
-    renderCurCoin(coinName, coinImgSrc)
-
-    console.log(`Updated curCoin: ${coinName} (${coinId})`);
+    renderCurCoin(coinId, coinName, coinImgSrc)
+     // Clear the chart and render all bars for the selected coin
+    $(".chart").empty();
+    
+    if(user.currentDay < 120) {
+         for (let i = 1; i <= Math.min(user.currentDay, 120); i++) {
+             renderChartSliding(coinId, i);
+         }
+     }
+     else {
+         for (let i = user.currentDay - 365; i <= Math.min(user.currentDay, 365); i++) {
+             renderChartSliding(coinId, i);
+         }
+     }
+   
 });
 
+// Add a mouseover event listener for each bar in the chart
+$("#root").on("mouseover", ".bar", function () {
+    const user = states.users.find(user => user.name === current_profile);
+    
+    const currentCoin = $("#curCoin img").attr("id");
+    
+    const day = $(this).data("day");
+    const date = $(this).data("date");
+
+    const dayData = market[day - 1];
+    const coinData = dayData?.coins.find(coin => coin.code === currentCoin);
+    
+    
+    const { open: entry, close: exit, high, low } = coinData;
+    
+    
+    $("#curCoin p").after(`<p id = "coinData">Date: ${date} Open: $${entry} Close: $${exit} High: $${high} Low: $${low}</p>`)
+
+});
+
+// Optional: Add mouseout event to reset the currentCoin div when the mouse leaves the bar
+$("#root").on("mouseout", ".bar", function () {
+    const currentCoin = $("#curCoin img");
+    const coinId = currentCoin.attr("id"); // Get the coin's id (e.g., 'ada', 'avax', etc.)
+    const coinName = currentCoin.data("name"); // Get the coin's name from data-name
+    const coinImgSrc = currentCoin.attr("src");
+    // Dynamically update the curCoin div
+    renderCurCoin(coinId, coinName, coinImgSrc)
+});
