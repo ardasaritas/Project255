@@ -3,9 +3,9 @@ let current_profile = null
 
 let storedData = localStorage.getItem("states") 
 states =  storedData ? JSON.parse( storedData) :  { active: null, users : [] }
-renderPage()
 
 renderPage()
+
 function update(fns) {
     for (fn of fns) {
         fn()
@@ -134,15 +134,15 @@ function renderProfile() {
     }
 }
 
-function renderWallet(user, dayData, curCoin ) {
-    console.log(user);   
-    console.log(dayData);   
-    console.log(curCoin);
+function renderWallet(user) {
     $("h1").text("$" + user.wallet.cash);
     $(".moneyinWallet td:last").text("$" + user.wallet.cash);
-    var money;
-    var transaction = "buy";
-    var myData = {};
+    let dayIndex = user.dayData - 1
+    let coinData = market[dayIndex].coins
+    coinData.find(coin => coin.code === coinCode)
+    let money;
+    let transaction = "buy";
+    let myData = {};
 
     for (let i = 0; i < dayData.coins.length ; i++ )
     {
@@ -150,7 +150,6 @@ function renderWallet(user, dayData, curCoin ) {
             myData = dayData.coins[i];
         }
     }
-    console.log(myData)
     
     $("#buy").on("click", function () {
         $(this).addClass("buyTime");
@@ -261,8 +260,6 @@ function renderChartSliding(selectedCoin, day) {
     // Get data for the selected coin on the current day
     const dayData = market[day - 1];
     const coinData = dayData?.coins.find(coin => coin.code === selectedCoin);
-    renderWallet(user, dayData, selectedCoin);
-   
 
     if (!coinData) {
         return;
@@ -420,6 +417,7 @@ $("#root").on("click", "#nextDay", function () {
     
         if (currentCoin) {
             renderChartSliding(currentCoin, user.currentDay); // Re-render chart
+            renderWallet(user)
         }
 
         // Save changes to states
