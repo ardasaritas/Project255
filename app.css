@@ -11,8 +11,8 @@ main {
     border: 1px solid #999;
     align-self: center;
     flex-direction: column;
-    height: 100vh;
     position: relative;
+    overflow: scroll;
 }
 
 #top {
