@@ -415,3 +415,24 @@ button#profile {
       /* Padding for readability */    /* Adjust font size */
     z-index: 10;        /* Ensure it's above other elements */
 }
+
+
+h1 {text-align: center;}
+
+section {display: flex; justify-content: center;}
+
+section h3 {text-align: center;}
+.trading {height: 150px; background-color: lightblue; width: 30%; padding:20px;  text-align: center;
+        display: flex; flex-direction: column; justify-content: space-between;}
+.buttons  {display: flex ; justify-content: center; }
+.buttons button {width:50%;}
+.inp {display: flex ;}
+.buySell { width: 100%;}
+
+.wallet {background-color: lightpink; width: 70%; padding: 20px;}
+.wallet table {margin-left: auto; margin-right: auto; border-collapse: collapse; width: 80%;}
+tr:first-child {color: white; background-color: darkcyan;}
+tr {color: black; background-color: greenyellow;}
+
+.buyTime {background: green; color: white;}
+.sellTime {background: red; color: white;}

@@ -25,11 +25,12 @@ function renderPage() {
         </div>
         <div id="tradingPage"></div>
         <div id="footer"><button type="button" id="profile">+ New Profile</button></div>
+        
     </main>`)
     renderProfiles()
 }
 
-function renderTradingPage(user) {
+function renderTradingPage(user) {  
     // Populate trading page with profile-specific data
     $("#tradingPage").css("flex-direction", "column")
                      .html(`
@@ -56,7 +57,38 @@ function renderTradingPage(user) {
     
                         <div id="curCoin"></div>
                         <div class="chart"></div>
+                         <h1>$MONEY</h1>
+                        <section>
+                            <div class="trading">
+                                <h3>Trading</h3>
+                                <div class="buttons">
+                                    <button type="button" class="buyTime" id="buy">Buy</button>
+                                    <button type="button" id="sell">Sell</button>
+                                </div>
+                                <div class="inp">
+                                    <input type="text"  placeholder="Amount">
+                                    <div>=$</div>
+                                </div>
+                                <button id="buySell" class="buyTime" type="button">Buy</button>
+                            </div>
+                            <div class="wallet">
+                                <h3>Wallet</h3>
+                                <table class="wTable">
+                                    <tr class="top">
+                                        <td>Coin</td>
+                                        <td>Amount</td>
+                                        <td>Subtotal</td>
+                                        <td>Last Close</td>
+                                    </tr>
+                                    <tr class="moneyinWallet">
+                                        <td>Dollar</td>
+                                        <td colspan="3">$MONEY</td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </section>
                         </div>
+                       
                      `);
 
     // renderCoins(user);
@@ -85,7 +117,7 @@ function renderProfile() {
                 renderChartSliding("btc", i);
             }
         }
-        
+       
         $("#user").html(`<i class="fa-solid fa-user fa-xs"></i>
             <span>${current_profile}</span>
             <button type="button">
@@ -101,6 +133,74 @@ function renderProfile() {
         states.active = null
     }
 }
+
+function renderWallet(user, dayData, curCoin ) {
+    console.log(user);   
+    console.log(dayData);   
+    console.log(curCoin);
+    $("h1").text("$" + user.wallet.cash);
+    $(".moneyinWallet td:last").text("$" + user.wallet.cash);
+    var money;
+    var transaction = "buy";
+    var myData = {};
+
+    for (let i = 0; i < dayData.coins.length ; i++ )
+    {
+        if (dayData.coins[i].code === curCoin) {
+            myData = dayData.coins[i];
+        }
+    }
+    console.log(myData)
+    
+    $("#buy").on("click", function () {
+        $(this).addClass("buyTime");
+        $("#sell").removeClass();
+        
+        $("#buySell").removeClass("sellTime")
+                     .addClass("buyTime")
+                     .html("Buy");
+
+        transaction = "buy";
+    })
+    $("#sell").on("click", function () {
+        $(this).addClass("sellTime");
+        $("#buy").removeClass();
+        $("#buySell").removeClass("buyTime")    
+                     .addClass("sellTime")
+                     .html("Sell");
+        transaction = "sell";
+    })
+    
+    $(".inp input").on("input", function () {
+        money = Number($(this).val()) * Number(myData.open);
+        money = money.toFixed(5)
+        $(".inp div").html("=$" + money);
+    });
+   
+    for (let c of coins) {
+        if (c.code == myData.code)
+            cname = c.name;
+    }
+
+    $("#buySell").on("click", function () {
+        
+        var newRow = "";
+        newRow = 
+            `<tr class="Added">
+            <td>${cname}</td>
+            <td>${$(".inp input").val()}</td>
+            <td>${money}</td>
+            <td>${myData.open}</td>
+            </tr>`;
+                      
+            $(".wTable").append(newRow);
+       
+            $(".inp div").html("=$");
+            $(".inp input").val("");
+       
+    })            
+           
+}   
 
 function renderCurCoin(coinId, coinName, coinImg) {
     $("#curCoin").html(`
@@ -161,6 +261,8 @@ function renderChartSliding(selectedCoin, day) {
     // Get data for the selected coin on the current day
     const dayData = market[day - 1];
     const coinData = dayData?.coins.find(coin => coin.code === selectedCoin);
+    renderWallet(user, dayData, selectedCoin);
+   
 
     if (!coinData) {
         return;
@@ -246,7 +348,6 @@ function renderChartSliding(selectedCoin, day) {
     $(".bottomLabel").css("bottom", "-10px")
                    .text(`$${minPrice}`)
                    //.css("right", "20px")
-
 
 }
 
@@ -420,7 +521,6 @@ $("#root").on("mouseover", ".bar", function () {
 
     const dayData = market[day - 1];
     const coinData = dayData?.coins.find(coin => coin.code === currentCoin);
-    
     
     const { open: entry, close: exit, high, low } = coinData;
     
