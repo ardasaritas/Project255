@@ -4,6 +4,7 @@ let current_profile = null
 let storedData = localStorage.getItem("states") 
 states =  storedData ? JSON.parse( storedData) :  { active: null, users : [] }
 
+// renders page
 renderPage()
 
 function update(fns) {
