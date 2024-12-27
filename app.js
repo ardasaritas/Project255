@@ -136,28 +136,12 @@ function renderProfile() {
 
 function renderWalletDay(user) {
 
-    
+    console.log(user.wallet)
+    console.log();
+
     let dayIndex = user.currentDay-1;
     let coinData = market[dayIndex];
     let num;
-
-    let coinCode = $("#curCoin img").attr("id");
-    let cname;
-    let money;
-          
-            for (let c of coins) {
-                if (c.code === coinCode) {
-                    cname = c.name;
-                    break;
-                }
-            }
-           
-            for (let i = 0; i < num; i++) {
-                if(coinData.coins[i].code === coinCode){
-                    coinData = coinData.coins[i];
-                    break;
-                }
-            }
 
     $("h1 span").text(user.wallet.cash 
         + user.wallet.Cordana * coinData.coins[0].close
@@ -173,40 +157,25 @@ function renderWalletDay(user) {
 
     $(".moneyinWallet td:last span").text(user.wallet.cash);
 
-    if ( $(".wTable tr").length > 2 ) {
-        let check = 0;
-        $(".wTable tr:gt(1)").each(function () {
-            if ($(this).children().eq(0).text() === cname && check === 0) {
-                let sumA = Number(Number($(this).children().eq(1).text()) + Number($(".inp input").val()));
-                let sumS = Number(Number($(this).children().eq(2).text()) + Number($(".inp div span").text()));
-                $(this).children().eq(1).text(sumA);
-                $(this).children().eq(2).text(sumS);
-                $(this).children().eq(3).text(coinData.open);
-                check = 1;
-            }
-            else if (check !== 1){
-                let newRow = 
-                `<tr class="Added">
-                <td>${cname}</td>
-                <td>${Number($(".inp input").val())}</td>
-                <td>${Number($(".inp div span").text())}</td>
-                <td>${coinData.open}</td>
-                </tr>`;
-                        
-                 $(".wTable").append(newRow);
-            }
-        })
-    }
-    else {
+    if ( $(".wTable tr").length === 1 && (!(user.wallet.Cordana !== 0 &&
+                                            user.wallet.Avalanche !== 0 &&
+                                            user.wallet.Bitcoin !== 0 &&
+                                            user.wallet.Dogecoin !== 0 &&
+                                            user.wallet.Ethereum !== 0 &&
+                                            user.wallet.Polygon !== 0 &&
+                                            user.wallet.Synthetix !== 0 &&
+                                            user.wallet.Tron !== 0 &&
+                                            user.wallet.Ripple !== 0))) { 
+            alert("a");
             let newRow = 
-            `<tr class="Added">
-            <td>${cname}</td>
-            <td>${Number($(".inp input").val())}</td>
-            <td>${Number($(".inp div span").text())}</td>
-            <td>${coinData.open}</td>
-            </tr>`; 
-                    
-             $(".wTable").append(newRow);
+                        `<tr class="Added">
+                        <td>${cname}</td>
+                        <td>${Number($(".inp input").val())}</td>
+                        <td>${Number($(".inp div span").text())}</td>
+                        <td>${coinData.open}</td>
+                        </tr>`; 
+                                                    
+           $(".wTable").append(newRow);
     }
 
     $(".Added").each(function () {
@@ -740,7 +709,42 @@ $("#root").on("click", "#buySell", function () {
                 }
             }
             
-           
+            if ( $(".wTable tr").length > 2 ) {
+                let check = 0;
+                $(".wTable tr:gt(1)").each(function () {
+                    if ($(this).children().eq(0).text() === cname && check === 0) {
+                        let sumA = Number(Number($(this).children().eq(1).text()) + Number($(".inp input").val()));
+                        let sumS = Number(Number($(this).children().eq(2).text()) + Number($(".inp div span").text()));
+                        $(this).children().eq(1).text(sumA);
+                        $(this).children().eq(2).text(sumS);
+                        $(this).children().eq(3).text(coinData.open);
+                        check = 1;
+                    }
+                    else if (check !== 1){
+                        let newRow = 
+                        `<tr class="Added">
+                        <td>${cname}</td>
+                        <td>${Number($(".inp input").val())}</td>
+                        <td>${Number($(".inp div span").text())}</td>
+                        <td>${coinData.open}</td>
+                        </tr>`;
+                                
+                         $(".wTable").append(newRow);
+                    }
+                })
+            }
+            else {
+                    let newRow = 
+                    `<tr class="Added">
+                    <td>${cname}</td>
+                    <td>${Number($(".inp input").val())}</td>
+                    <td>${Number($(".inp div span").text())}</td>
+                    <td>${coinData.open}</td>
+                    </tr>`; 
+                            
+                     $(".wTable").append(newRow);
+            }
+    
             user.wallet.cash -= Number($(".inp div span").text());
             user.wallet[cname] +=  Number($(".inp input").val());
           
