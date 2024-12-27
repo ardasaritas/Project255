@@ -137,19 +137,22 @@ function renderWallet(user) {
     let inp;
     let item;
     user.wallet.cash = Number($(".moneyinWallet td:nth-child(2) span").text());
-    
-    if ( $(".wTable tr").length > 2) {
+   
+    if ( $(".wTable tr").length > 2 ) {
         $(".wTable tr:last-child").each(function () {
             item = $(this).children().eq(0).text();
-            let amount =  Number($(this).children().eq(1).text());
+            let amount = Number($(".inp input").val());
+            if ($("#sell").hasClass("sellTime"))
+                amount *= -1;
+
             console.log(item);
             console.log(amount);
 
             user.wallet[item] += amount; 
+
         });
        console.log( user.wallet);
     }
-
 }   
 
 function renderWalletDay(user) {
@@ -229,8 +232,6 @@ function renderWalletDay(user) {
                 break;
         }
     })
-
-    
 
     console.log(user.wallet);
     console.log($("h1 span").text());
@@ -651,27 +652,94 @@ $("#root").on("click", "#buySell", function () {
                     break;
                 }
             }
-
-            let newRow = 
+            
+            if ( $(".wTable tr").length > 2 ) {
+                let check = 0;
+                $(".wTable tr:gt(1)").each(function () {
+                    if ($(this).children().eq(0).text() === cname && check === 0) {
+                        let sumA = Number(Number($(this).children().eq(1).text()) + Number($(".inp input").val()));
+                        let sumS = Number(Number($(this).children().eq(2).text()) + Number($(".inp div span").text()));
+                        $(this).children().eq(1).text(sumA.toFixed(7));
+                        $(this).children().eq(2).text(sumS.toFixed(7));
+                        $(this).children().eq(3).text(coinData.open);
+                        check = 1;
+                    }
+                    else if (check !== 1){
+                        alert("b")
+                        let newRow = 
+                        `<tr class="Added">
+                        <td>${cname}</td>
+                        <td>${Number($(".inp input").val()).toFixed(7)}</td>
+                        <td>${Number($(".inp div span").text())}</td>
+                        <td>${coinData.open}</td>
+                        </tr>`;
+                                
+                         $(".wTable").append(newRow);
+                    }
+                })
+            }
+            else {
+                    let newRow = 
                     `<tr class="Added">
                     <td>${cname}</td>
                     <td>${Number($(".inp input").val()).toFixed(7)}</td>
                     <td>${Number($(".inp div span").text())}</td>
                     <td>${coinData.open}</td>
-                    </tr>`;
+                    </tr>`; 
                             
-            $(".wTable").append(newRow);
+                     $(".wTable").append(newRow);
+            }
+    
+            
             user.wallet.cash -= Number($(".inp div span").text());
             $(".moneyinWallet td:last span").text(user.wallet.cash);
 
+            renderWallet(user);
             $(".inp div span").html("");
             $(".inp input").val("");
-             
+            
         }
-    }
-    else if ( $(this).hasClass("sellTime")) {
         
     }
-    renderWallet(user);
-   
+    else if ( $(this).hasClass("sellTime")) {
+        let coinCode = $("#curCoin img").attr("id");
+        let cname;
+        let money;
+
+        for (let c of coins) {
+            if (c.code === coinCode) {
+                cname = c.name;
+                break;
+            }
+        }
+
+        if ($(".inp div span").text() === "") 
+             alert("Input data");
+        else if (user.wallet[cname] < Number($(".inp input").val())) {
+            alert("Not enough coin to sell");
+        }
+        else {
+            let dayIndex = user.currentDay - 1;
+            let coinData = market[dayIndex];
+            let num = (coinData.coins.length);
+            let selNUm = Number($(".inp input").text())
+            user.wallet[cname] -= selNUm;
+
+            for (let i = 0; i < num; i++) {
+                if(coinData.coins[i].code === coinCode){
+                    coinData = coinData.coins[i];
+                    break;
+                }
+            }
+
+            user.wallet.cash +=  ( Number($(".inp input").val()) * coinData.open);
+
+           
+            renderWallet(user);
+            $(".inp div span").html("");
+            $(".inp input").val("");
+        }
+        
+    }
+    
 })        
