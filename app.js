@@ -136,9 +136,28 @@ function renderProfile() {
 
 function renderWalletDay(user) {
 
-    let dayIndex = user.currentDay-2;
+    
+    let dayIndex = user.currentDay-1;
     let coinData = market[dayIndex];
     let num;
+
+    let coinCode = $("#curCoin img").attr("id");
+    let cname;
+    let money;
+          
+            for (let c of coins) {
+                if (c.code === coinCode) {
+                    cname = c.name;
+                    break;
+                }
+            }
+           
+            for (let i = 0; i < num; i++) {
+                if(coinData.coins[i].code === coinCode){
+                    coinData = coinData.coins[i];
+                    break;
+                }
+            }
 
     $("h1 span").text(user.wallet.cash 
         + user.wallet.Cordana * coinData.coins[0].close
@@ -154,70 +173,151 @@ function renderWalletDay(user) {
 
     $(".moneyinWallet td:last span").text(user.wallet.cash);
 
+    if ( $(".wTable tr").length > 2 ) {
+        let check = 0;
+        $(".wTable tr:gt(1)").each(function () {
+            if ($(this).children().eq(0).text() === cname && check === 0) {
+                let sumA = Number(Number($(this).children().eq(1).text()) + Number($(".inp input").val()));
+                let sumS = Number(Number($(this).children().eq(2).text()) + Number($(".inp div span").text()));
+                $(this).children().eq(1).text(sumA);
+                $(this).children().eq(2).text(sumS);
+                $(this).children().eq(3).text(coinData.open);
+                check = 1;
+            }
+            else if (check !== 1){
+                let newRow = 
+                `<tr class="Added">
+                <td>${cname}</td>
+                <td>${Number($(".inp input").val())}</td>
+                <td>${Number($(".inp div span").text())}</td>
+                <td>${coinData.open}</td>
+                </tr>`;
+                        
+                 $(".wTable").append(newRow);
+            }
+        })
+    }
+    else {
+            let newRow = 
+            `<tr class="Added">
+            <td>${cname}</td>
+            <td>${Number($(".inp input").val())}</td>
+            <td>${Number($(".inp div span").text())}</td>
+            <td>${coinData.open}</td>
+            </tr>`; 
+                    
+             $(".wTable").append(newRow);
+    }
+
     $(".Added").each(function () {
-        console.log($(this).children().text());
         switch ($(this).children().eq(0).text()) {
             case "Cordana":
-                $(this).children().eq(1).text(user.wallet.Cordana);
-                num = parseFloat($(this).children().eq(1).text()) * coinData.coins[0].close;
-                $(this).children().eq(2).text(num);
-                console.log(num);
-                $(this).children().eq(3).text(coinData.coins[0].close);
+                if (user.wallet.Cordana === 0){
+                    $(this).children().remove();
+                }
+                else {
+                    $(this).children().eq(1).text(user.wallet.Cordana);
+                    num = parseFloat($(this).children().eq(1).text()) * coinData.coins[0].close;
+                    $(this).children().eq(2).text(num);
+                    console.log(num);
+                    $(this).children().eq(3).text(coinData.coins[0].close);
+                }
                 break;
             case "Avalanche":
-                $(this).children().eq(1).text(user.wallet.Avalanche);
-                num = parseFloat($(this).children().eq(1).text()) * coinData.coins[1].close;
-                $(this).children().eq(2).text(num);
-                console.log(num);
-                $(this).children().eq(3).text(coinData.coins[1].close);
+                if (user.wallet.Avalanche === 0){
+                    $(this).children().remove();
+                }
+                else {
+                    $(this).children().eq(1).text(user.wallet.Avalanche);
+                    num = parseFloat($(this).children().eq(1).text()) * coinData.coins[1].close;
+                    $(this).children().eq(2).text(num);
+                    console.log(num);
+                    $(this).children().eq(3).text(coinData.coins[1].close);
+                }
                 break;
             case "Bitcoin":
-                $(this).children().eq(1).text(user.wallet.Bitcoin);
-                num = parseFloat($(this).children().eq(1).text()) * coinData.coins[2].close;
-                $(this).children().eq(2).text(num);
-                console.log(num);
-                $(this).children().eq(3).text(coinData.coins[2].close);
+                if (user.wallet.Bitcoin === 0){
+                    $(this).children().remove();
+                }
+                else {
+                    $(this).children().eq(1).text(user.wallet.Bitcoin);
+                    num = parseFloat($(this).children().eq(1).text()) * coinData.coins[2].close;
+                    $(this).children().eq(2).text(num);
+                    console.log(num);
+                    $(this).children().eq(3).text(coinData.coins[2].close);
+                }
                 break;
             case "Dogecoin":
-                $(this).children().eq(1).text(user.wallet.Dogecoin);
-                num = parseFloat($(this).children().eq(1).text()) * coinData.coins[3].close;
-                $(this).children().eq(2).text(num);
-                console.log(num);
-                $(this).children().eq(3).text(coinData.coins[3].close);
+                if (user.wallet.Dogecoin === 0){
+                    $(this).children().remove();
+                }
+                else {
+                    $(this).children().eq(1).text(user.wallet.Dogecoin);
+                    num = parseFloat($(this).children().eq(1).text()) * coinData.coins[3].close;
+                    $(this).children().eq(2).text(num);
+                    console.log(num);
+                    $(this).children().eq(3).text(coinData.coins[3].close);
+                }
                 break;
             case "Ethereum":
-                $(this).children().eq(1).text(user.wallet.Ethereum);
-                num = parseFloat($(this).children().eq(1).text()) * coinData.coins[4].close;
-                $(this).children().eq(2).text(num);
-                console.log(num);
-                $(this).children().eq(3).text(coinData.coins[4].close);
+                if (user.wallet.Ethereum === 0){
+                    $(this).children().remove();
+                }
+                else {
+                    $(this).children().eq(1).text(user.wallet.Ethereum);
+                    num = parseFloat($(this).children().eq(1).text()) * coinData.coins[4].close;
+                    $(this).children().eq(2).text(num);
+                    console.log(num);
+                    $(this).children().eq(3).text(coinData.coins[4].close);
+                }
                 break;
             case "Polygon":
-                $(this).children().eq(1).text(user.wallet.Polygon);
-                num = parseFloat($(this).children().eq(1).text()) * coinData.coins[5].close;
-                $(this).children().eq(2).text(num);
-                console.log(num);
-                $(this).children().eq(3).text(coinData.coins[5].close);
+                if (user.wallet.Polygon === 0){
+                    $(this).children().remove();
+                }
+                else {
+                    $(this).children().eq(1).text(user.wallet.Polygon);
+                    num = parseFloat($(this).children().eq(1).text()) * coinData.coins[5].close;
+                    $(this).children().eq(2).text(num);
+                    console.log(num);
+                    $(this).children().eq(3).text(coinData.coins[5].close);
+                }
                 break;
             case "Synthetix":
-                $(this).children().eq(1).text(user.wallet.Synthetix);
-                num = parseFloat($(this).children().eq(1).text()) * coinData.coins[6].close;
-                $(this).children().eq(2).text(num);
-                console.log(num);
-                $(this).children().eq(3).text(coinData.coins[6].close);
+                if (user.wallet.Synthetix === 0){
+                    $(this).children().remove();
+                }
+                else {
+                    $(this).children().eq(1).text(user.wallet.Synthetix);
+                    num = parseFloat($(this).children().eq(1).text()) * coinData.coins[6].close;
+                    $(this).children().eq(2).text(num);
+                    console.log(num);
+                    $(this).children().eq(3).text(coinData.coins[6].close);
+                }
                 break;
             case "Tron":
-                $(this).children().eq(1).text(user.wallet.Tron);
-                num = parseFloat($(this).children().eq(1).text()) * coinData.coins[7].close;
-                $(this).children().eq(2).text(num);
-                console.log(num);
-                $(this).children().eq(3).text(coinData.coins[7].close);
+                if (user.wallet.Tron === 0){
+                    $(this).children().remove();
+                }
+                else {
+                    $(this).children().eq(1).text(user.wallet.Tron);
+                    num = parseFloat($(this).children().eq(1).text()) * coinData.coins[7].close;
+                    $(this).children().eq(2).text(num);
+                    console.log(num);
+                    $(this).children().eq(3).text(coinData.coins[7].close);
+                }
                 break;
             case "Ripple":
-                num = parseFloat($(this).children().eq(1).text()) * coinData.coins[8].close;
-                $(this).children().eq(2).text(num);
-                console.log(num);
-                $(this).children().eq(3).text(coinData.coins[8].close);
+                if (user.wallet.Ripple === 0){
+                    $(this).children().remove();
+                }
+                else {
+                    $(this).children().eq(1).text(user.wallet.Ripple);
+                    num = parseFloat($(this).children().eq(1).text()) * coinData.coins[8].close;
+                    $(this).children().eq(2).text(num);
+                    console.log(num);
+                    $(this).children().eq(3).text(coinData.coins[8].close);
+                }
                 break;
         }
     })
@@ -640,42 +740,7 @@ $("#root").on("click", "#buySell", function () {
                 }
             }
             
-            if ( $(".wTable tr").length > 2 ) {
-                let check = 0;
-                $(".wTable tr:gt(1)").each(function () {
-                    if ($(this).children().eq(0).text() === cname && check === 0) {
-                        let sumA = Number(Number($(this).children().eq(1).text()) + Number($(".inp input").val()));
-                        let sumS = Number(Number($(this).children().eq(2).text()) + Number($(".inp div span").text()));
-                        $(this).children().eq(1).text(sumA);
-                        $(this).children().eq(2).text(sumS);
-                        $(this).children().eq(3).text(coinData.open);
-                        check = 1;
-                    }
-                    else if (check !== 1){
-                        let newRow = 
-                        `<tr class="Added">
-                        <td>${cname}</td>
-                        <td>${Number($(".inp input").val())}</td>
-                        <td>${Number($(".inp div span").text())}</td>
-                        <td>${coinData.open}</td>
-                        </tr>`;
-                                
-                         $(".wTable").append(newRow);
-                    }
-                })
-            }
-            else {
-                    let newRow = 
-                    `<tr class="Added">
-                    <td>${cname}</td>
-                    <td>${Number($(".inp input").val())}</td>
-                    <td>${Number($(".inp div span").text())}</td>
-                    <td>${coinData.open}</td>
-                    </tr>`; 
-                            
-                     $(".wTable").append(newRow);
-            }
-    
+           
             user.wallet.cash -= Number($(".inp div span").text());
             user.wallet[cname] +=  Number($(".inp input").val());
           
