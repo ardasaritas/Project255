@@ -91,6 +91,7 @@ function renderTradingPage(user) {
                         </div>
                        
                      `);
+
     renderWalletDay(user)
     // renderCoins(user);
     // drawGraph(user);
@@ -136,11 +137,9 @@ function renderProfile() {
 
 function renderWalletDay(user) {
 
-    console.log(user.wallet)
-    console.log();
-
     let dayIndex = user.currentDay-1;
     let coinData = market[dayIndex];
+  
     let num;
 
     $("h1 span").text(user.wallet.cash 
@@ -157,25 +156,30 @@ function renderWalletDay(user) {
 
     $(".moneyinWallet td:last span").text(user.wallet.cash);
 
-    if ( $(".wTable tr").length === 1 && (!(user.wallet.Cordana !== 0 &&
-                                            user.wallet.Avalanche !== 0 &&
-                                            user.wallet.Bitcoin !== 0 &&
-                                            user.wallet.Dogecoin !== 0 &&
-                                            user.wallet.Ethereum !== 0 &&
-                                            user.wallet.Polygon !== 0 &&
-                                            user.wallet.Synthetix !== 0 &&
-                                            user.wallet.Tron !== 0 &&
-                                            user.wallet.Ripple !== 0))) { 
-            alert("a");
-            let newRow = 
-                        `<tr class="Added">
-                        <td>${cname}</td>
-                        <td>${Number($(".inp input").val())}</td>
-                        <td>${Number($(".inp div span").text())}</td>
-                        <td>${coinData.open}</td>
-                        </tr>`; 
-                                                    
-           $(".wTable").append(newRow);
+    if ( ($(".wTable tr").length === 2)){ 
+        if(!(user.wallet.Cordana !== 0 &&
+            user.wallet.Avalanche !== 0 &&
+            user.wallet.Bitcoin !== 0 &&
+            user.wallet.Dogecoin !== 0 &&
+            user.wallet.Ethereum !== 0 &&
+            user.wallet.Polygon !== 0 &&
+            user.wallet.Synthetix !== 0 &&
+            user.wallet.Tron !== 0 &&
+             user.wallet.Ripple !== 0)) { 
+            for (let i = 0; i < coins.length; i++) {
+                if (user.wallet[coins[i].name] !== 0){
+                    let newRow = 
+                                `<tr class="Added">
+                                <td>${coins[i].name}</td>
+                                <td>${user.wallet[coins[i].name]}</td>
+                                <td>${user.wallet[coins[i].name]*coinData.open}</td>
+                                <td>${coinData.open}</td>
+                                </tr>`; 
+                                                            
+                   $(".wTable").append(newRow);
+                }
+            }
+        }
     }
 
     $(".Added").each(function () {
@@ -189,7 +193,9 @@ function renderWalletDay(user) {
                     num = parseFloat($(this).children().eq(1).text()) * coinData.coins[0].close;
                     $(this).children().eq(2).text(num);
                     console.log(num);
-                    $(this).children().eq(3).text(coinData.coins[0].close);
+                    if (user.currentDay > 1) {
+                        $(this).children().eq(3).text(market[dayIndex-1].coins[0].close);
+                    }
                 }
                 break;
             case "Avalanche":
@@ -201,7 +207,9 @@ function renderWalletDay(user) {
                     num = parseFloat($(this).children().eq(1).text()) * coinData.coins[1].close;
                     $(this).children().eq(2).text(num);
                     console.log(num);
-                    $(this).children().eq(3).text(coinData.coins[1].close);
+                    if (user.currentDay > 1) {
+                        $(this).children().eq(3).text(market[dayIndex-1].coins[1].close);
+                    }
                 }
                 break;
             case "Bitcoin":
@@ -213,7 +221,9 @@ function renderWalletDay(user) {
                     num = parseFloat($(this).children().eq(1).text()) * coinData.coins[2].close;
                     $(this).children().eq(2).text(num);
                     console.log(num);
-                    $(this).children().eq(3).text(coinData.coins[2].close);
+                    if (user.currentDay > 1) {
+                        $(this).children().eq(3).text(market[dayIndex-1].coins[2].close);
+                    }
                 }
                 break;
             case "Dogecoin":
@@ -225,7 +235,9 @@ function renderWalletDay(user) {
                     num = parseFloat($(this).children().eq(1).text()) * coinData.coins[3].close;
                     $(this).children().eq(2).text(num);
                     console.log(num);
-                    $(this).children().eq(3).text(coinData.coins[3].close);
+                    if (user.currentDay > 1) {
+                        $(this).children().eq(3).text(market[dayIndex-1].coins[3].close);
+                    }
                 }
                 break;
             case "Ethereum":
@@ -237,7 +249,9 @@ function renderWalletDay(user) {
                     num = parseFloat($(this).children().eq(1).text()) * coinData.coins[4].close;
                     $(this).children().eq(2).text(num);
                     console.log(num);
-                    $(this).children().eq(3).text(coinData.coins[4].close);
+                    if (user.currentDay > 1) {
+                        $(this).children().eq(3).text(market[dayIndex-1].coins[4].close);
+                    }
                 }
                 break;
             case "Polygon":
@@ -249,7 +263,9 @@ function renderWalletDay(user) {
                     num = parseFloat($(this).children().eq(1).text()) * coinData.coins[5].close;
                     $(this).children().eq(2).text(num);
                     console.log(num);
-                    $(this).children().eq(3).text(coinData.coins[5].close);
+                    if (user.currentDay > 1) {
+                        $(this).children().eq(3).text(market[dayIndex-1].coins[5].close);
+                    }
                 }
                 break;
             case "Synthetix":
@@ -261,7 +277,9 @@ function renderWalletDay(user) {
                     num = parseFloat($(this).children().eq(1).text()) * coinData.coins[6].close;
                     $(this).children().eq(2).text(num);
                     console.log(num);
-                    $(this).children().eq(3).text(coinData.coins[6].close);
+                    if (user.currentDay > 1) {
+                        $(this).children().eq(3).text(market[dayIndex-1].coins[6].close);
+                    }
                 }
                 break;
             case "Tron":
@@ -273,7 +291,9 @@ function renderWalletDay(user) {
                     num = parseFloat($(this).children().eq(1).text()) * coinData.coins[7].close;
                     $(this).children().eq(2).text(num);
                     console.log(num);
-                    $(this).children().eq(3).text(coinData.coins[7].close);
+                    if (user.currentDay > 1) {
+                        $(this).children().eq(3).text(market[dayIndex-1].coins[7].close);
+                    }
                 }
                 break;
             case "Ripple":
@@ -285,7 +305,9 @@ function renderWalletDay(user) {
                     num = parseFloat($(this).children().eq(1).text()) * coinData.coins[8].close;
                     $(this).children().eq(2).text(num);
                     console.log(num);
-                    $(this).children().eq(3).text(coinData.coins[8].close);
+                    if (user.currentDay > 1) {
+                        $(this).children().eq(3).text(market[dayIndex-1].coins[8].close);
+                    }
                 }
                 break;
         }
@@ -734,17 +756,17 @@ $("#root").on("click", "#buySell", function () {
                 })
             }
             else {
-                    let newRow = 
-                    `<tr class="Added">
-                    <td>${cname}</td>
-                    <td>${Number($(".inp input").val())}</td>
-                    <td>${Number($(".inp div span").text())}</td>
-                    <td>${coinData.open}</td>
-                    </tr>`; 
-                            
-                     $(".wTable").append(newRow);
+                let newRow = 
+                `<tr class="Added">
+                <td>${cname}</td>
+                <td>${Number($(".inp input").val())}</td>
+                <td>${Number($(".inp div span").text())}</td>
+                <td>${coinData.open}</td>
+                </tr>`; 
+                        
+                 $(".wTable").append(newRow);
             }
-    
+
             user.wallet.cash -= Number($(".inp div span").text());
             user.wallet[cname] +=  Number($(".inp input").val());
           
