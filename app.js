@@ -145,13 +145,8 @@ function renderWallet(user) {
             if ($("#sell").hasClass("sellTime"))
                 amount *= -1;
 
-            console.log(item);
-            console.log(amount);
-
             user.wallet[item] += amount; 
-
         });
-       console.log( user.wallet);
     }
 }   
 
@@ -174,7 +169,7 @@ function renderWalletDay(user) {
     );
 
     $(".Added").each(function () {
-        console.log($(this).children().eq(0).text());
+        console.log($(this).children().text());
         switch ($(this).children().eq(0).text()) {
             case "Cordana":
                 num = parseFloat($(this).children().eq(1).text()) * coinData.coins[0].close;
@@ -254,7 +249,6 @@ function renderTransactions () {
         }
     }
    
-
     money = Number($(".inp input").val()) * Number(coinData.open);
     money = money.toFixed(5)
     $(".inp div span").html(money);
@@ -665,7 +659,6 @@ $("#root").on("click", "#buySell", function () {
                         check = 1;
                     }
                     else if (check !== 1){
-                        alert("b")
                         let newRow = 
                         `<tr class="Added">
                         <td>${cname}</td>
@@ -722,22 +715,34 @@ $("#root").on("click", "#buySell", function () {
             let dayIndex = user.currentDay - 1;
             let coinData = market[dayIndex];
             let num = (coinData.coins.length);
-            let selNUm = Number($(".inp input").text())
-            user.wallet[cname] -= selNUm;
-
+          
             for (let i = 0; i < num; i++) {
                 if(coinData.coins[i].code === coinCode){
                     coinData = coinData.coins[i];
                     break;
                 }
             }
-
+            console.log(user.wallet);
+            console.log(user.wallet[cname]);
             user.wallet.cash +=  ( Number($(".inp input").val()) * coinData.open);
-
+            
+            $(".wTable tr:gt(1)").each(function () {
+                if ( $(this).children().eq(0).text() === cname ){
+                    if (user.wallet[cname] === 0)
+                        $(this).children().eq(1).remove()
+                    else{
+                    $(this).children().eq(1).val(user.wallet[cname]-Number($(".inp input").html()));
+                    $(this).children().eq(2).val(user.wallet[cname] *  coinData.open);
+                    }
+                }
+            })
+            
            
             renderWallet(user);
+            /*
             $(".inp div span").html("");
             $(".inp input").val("");
+            */
         }
         
     }
