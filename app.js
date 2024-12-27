@@ -91,6 +91,7 @@ function renderTradingPage(user) {
                         </div>
                        
                      `);
+    renderWalletDay(user)
     // renderCoins(user);
     // drawGraph(user);
     // updateDate(user);
