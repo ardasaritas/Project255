@@ -25,7 +25,7 @@ function renderPage() {
         </div>
         <div id="tradingPage"></div>
         <div id="footer"><button type="button" id="profile">+ New Profile</button></div>
-        
+
     </main>`)
     renderProfiles()
 }
@@ -57,7 +57,7 @@ function renderTradingPage(user) {
     
                         <div id="curCoin"></div>
                         <div class="chart"></div>
-                         <h1>$MONEY</h1>
+                        <h1 class="cashIs">$<span>1000</span></h1>
                         <section>
                             <div class="trading">
                                 <h3>Trading</h3>
@@ -67,7 +67,7 @@ function renderTradingPage(user) {
                                 </div>
                                 <div class="inp">
                                     <input type="text"  placeholder="Amount">
-                                    <div>=$</div>
+                                    <div>=$<span></span></div>
                                 </div>
                                 <button id="buySell" class="buyTime" type="button">Buy</button>
                             </div>
@@ -82,7 +82,7 @@ function renderTradingPage(user) {
                                     </tr>
                                     <tr class="moneyinWallet">
                                         <td>Dollar</td>
-                                        <td colspan="3">$MONEY</td>
+                                        <td colspan="3">$<span>1000</span></td>
                                     </tr>
                                 </table>
                             </div>
@@ -90,7 +90,6 @@ function renderTradingPage(user) {
                         </div>
                        
                      `);
-
     // renderCoins(user);
     // drawGraph(user);
     // updateDate(user);
@@ -105,7 +104,6 @@ function renderProfile() {
         const $bitcoin = $("#coins img[src='./images/btc.png']"); 
         startPulsating($bitcoin);
         currentAnimatingCoin = $bitcoin;
-        
         // When the profile is opened, initialize it with btc
         if(user.currentDay < 120) {
             for (let i = 1; i <= Math.min(user.currentDay, 120); i++) {
@@ -117,7 +115,6 @@ function renderProfile() {
                 renderChartSliding("btc", i);
             }
         }
-       
         $("#user").html(`<i class="fa-solid fa-user fa-xs"></i>
             <span>${current_profile}</span>
             <button type="button">
@@ -134,72 +131,133 @@ function renderProfile() {
     }
 }
 
-function renderWallet(user) {
-    $("h1").text("$" + user.wallet.cash);
-    $(".moneyinWallet td:last").text("$" + user.wallet.cash);
-    let dayIndex = user.dayData - 1
-    let coinData = market[dayIndex].coins
-    coinData.find(coin => coin.code === coinCode)
-    let money;
-    let transaction = "buy";
-    let myData = {};
+function renderWallet(user) { 
+    $(".moneyinWallet td:nth-child(2) span").text(user.wallet.cash);
+    
+    let inp;
+    let item;
+    user.wallet.cash = Number($(".moneyinWallet td:nth-child(2) span").text());
+    
+    if ( $(".wTable tr").length > 2) {
+        $(".wTable tr:last-child").each(function () {
+            item = $(this).children().eq(0).text();
+            let amount =  Number($(this).children().eq(1).text());
+            console.log(item);
+            console.log(amount);
 
-    for (let i = 0; i < dayData.coins.length ; i++ )
-    {
-        if (dayData.coins[i].code === curCoin) {
-            myData = dayData.coins[i];
+            user.wallet[item] += amount; 
+        });
+       console.log( user.wallet);
+    }
+
+}   
+
+function renderWalletDay(user) {
+
+    let dayIndex = user.currentDay-2;
+    let coinData = market[dayIndex];
+    let num;
+
+    $("h1 span").text(user.wallet.cash 
+        + user.wallet.Cordana * coinData.coins[0].close
+        + user.wallet.Avalanche * coinData.coins[1].close
+        + user.wallet.Bitcoin * coinData.coins[2].close
+        + user.wallet.Dogecoin * coinData.coins[3].close
+        + user.wallet.Ethereum * coinData.coins[4].close
+        + user.wallet.Polygon * coinData.coins[5].close
+        + user.wallet.Synthetix * coinData.coins[6].close
+        + user.wallet.Tron * coinData.coins[7].close
+        + user.wallet.Ripple * coinData.coins[8].close
+    );
+
+    $(".Added").each(function () {
+        console.log($(this).children().eq(0).text());
+        switch ($(this).children().eq(0).text()) {
+            case "Cordana":
+                num = parseFloat($(this).children().eq(1).text()) * coinData.coins[0].close;
+                $(this).children().eq(2).text(num);
+                console.log(num);
+                $(this).children().eq(3).text(coinData.coins[0].close);
+                break;
+            case "Avalanche":
+                num = parseFloat($(this).children().eq(1).text()) * coinData.coins[1].close;
+                $(this).children().eq(2).text(num);
+                console.log(num);
+                $(this).children().eq(3).text(coinData.coins[1].close);
+                break;
+            case "Bitcoin":
+                num = parseFloat($(this).children().eq(1).text()) * coinData.coins[2].close;
+                $(this).children().eq(2).text(num);
+                console.log(num);
+                $(this).children().eq(3).text(coinData.coins[2].close);
+                break;
+            case "Dogecoin":
+                num = parseFloat($(this).children().eq(1).text()) * coinData.coins[3].close;
+                $(this).children().eq(2).text(num);
+                console.log(num);
+                $(this).children().eq(3).text(coinData.coins[3].close);
+                break;
+            case "Ethereum":
+                num = parseFloat($(this).children().eq(1).text()) * coinData.coins[4].close;
+                $(this).children().eq(2).text(num);
+                console.log(num);
+                $(this).children().eq(3).text(coinData.coins[4].close);
+                break;
+            case "Polygon":
+                num = parseFloat($(this).children().eq(1).text()) * coinData.coins[5].close;
+                $(this).children().eq(2).text(num);
+                console.log(num);
+                $(this).children().eq(3).text(coinData.coins[5].close);
+                break;
+            case "Synthetix":
+                num = parseFloat($(this).children().eq(1).text()) * coinData.coins[6].close;
+                $(this).children().eq(2).text(num);
+                console.log(num);
+                $(this).children().eq(3).text(coinData.coins[6].close);
+                break;
+            case "Tron":
+                num = parseFloat($(this).children().eq(1).text()) * coinData.coins[7].close;
+                $(this).children().eq(2).text(num);
+                console.log(num);
+                $(this).children().eq(3).text(coinData.coins[7].close);
+                break;
+            case "Ripple":
+                num = parseFloat($(this).children().eq(1).text()) * coinData.coins[8].close;
+                $(this).children().eq(2).text(num);
+                console.log(num);
+                $(this).children().eq(3).text(coinData.coins[8].close);
+                break;
+        }
+    })
+
+    
+
+    console.log(user.wallet);
+    console.log($("h1 span").text());
+}
+
+function renderTransactions () {
+
+    let currentCoin = $("#curCoin img").attr("id");
+    let dayIndex = user.currentDay - 1;
+  
+    let coinData = market[dayIndex];
+
+    let num = (coinData.coins.length);
+    let money;
+
+    for (let i = 0; i < num; i++) {
+        if(coinData.coins[i].code === currentCoin){
+            coinData = coinData.coins[i];
+            break;
         }
     }
-    
-    $("#buy").on("click", function () {
-        $(this).addClass("buyTime");
-        $("#sell").removeClass();
-        
-        $("#buySell").removeClass("sellTime")
-                     .addClass("buyTime")
-                     .html("Buy");
-
-        transaction = "buy";
-    })
-    $("#sell").on("click", function () {
-        $(this).addClass("sellTime");
-        $("#buy").removeClass();
-        $("#buySell").removeClass("buyTime")    
-                     .addClass("sellTime")
-                     .html("Sell");
-        transaction = "sell";
-    })
-    
-    $(".inp input").on("input", function () {
-        money = Number($(this).val()) * Number(myData.open);
-        money = money.toFixed(5)
-        $(".inp div").html("=$" + money);
-    });
    
-    for (let c of coins) {
-        if (c.code == myData.code)
-            cname = c.name;
-    }
 
-    $("#buySell").on("click", function () {
-        
-        var newRow = "";
-        newRow = 
-            `<tr class="Added">
-            <td>${cname}</td>
-            <td>${$(".inp input").val()}</td>
-            <td>${money}</td>
-            <td>${myData.open}</td>
-            </tr>`;
-                      
-            $(".wTable").append(newRow);
-       
-            $(".inp div").html("=$");
-            $(".inp input").val("");
-       
-    })            
-           
-}   
+    money = Number($(".inp input").val()) * Number(coinData.open);
+    money = money.toFixed(5)
+    $(".inp div span").html(money);
+} 
 
 function renderCurCoin(coinId, coinName, coinImg) {
     $("#curCoin").html(`
@@ -385,7 +443,15 @@ $("#root").on("keydown keyup", "#prompt input", function(e) {
 
 $("#root").on("click", "#prompt button", function() {
     let name = $(this).parent().children("input").val()
-    let user = {name, wallet: {cash: 1000}, currentDay : 1, currentDate : "1 January 2021", market : []}
+    let user = {name, wallet: {cash: 1000,  Cordana: 0,
+        Avalanche: 0,
+        Bitcoin: 0,
+        Dogecoin: 0,
+        Ethereum: 0,
+        Polygon: 0,
+        Synthetix: 0,
+        Tron: 0,
+        Ripple: 0}, currentDay : 1, currentDate : "1 January 2021", market : []}
     states.users.push(user)
     //localStorage.setItem(states, JSON.parse(states))
     $("*:not(#prompt):not(#prompt *):not(.profile button)").css("background-color", "");
@@ -417,7 +483,7 @@ $("#root").on("click", "#nextDay", function () {
     
         if (currentCoin) {
             renderChartSliding(currentCoin, user.currentDay); // Re-render chart
-            renderWallet(user)
+            renderWalletDay(user);
         }
 
         // Save changes to states
@@ -497,12 +563,12 @@ $("#root").on("click", "#coins img", function () {
     
     if(user.currentDay < 120) {
          for (let i = 1; i <= Math.min(user.currentDay, 120); i++) {
-             renderChartSliding(coinId, i);
+            renderChartSliding(coinId, i);
          }
      }
      else {
          for (let i = user.currentDay - 365; i <= Math.min(user.currentDay, 365); i++) {
-             renderChartSliding(coinId, i);
+            renderChartSliding(coinId, i);
          }
      }
    
@@ -536,3 +602,76 @@ $("#root").on("mouseout", ".bar", function () {
     // Dynamically update the curCoin div
     renderCurCoin(coinId, coinName, coinImgSrc)
 });
+
+
+$("#root").on("click", "#buy" ,function () {
+    $(this).addClass("buyTime");
+    $("#sell").removeClass();
+    
+    $("#buySell").removeClass("sellTime")
+                 .addClass("buyTime")
+                 .html("Buy");
+})
+$("#root").on("click", "#sell",function () {
+    $(this).addClass("sellTime");
+    $("#buy").removeClass();
+    $("#buySell").removeClass("buyTime")    
+                 .addClass("sellTime")
+                 .html("Sell");
+})
+
+$("#root").on("input", ".inp input" , function () {
+    renderTransactions();
+});
+
+$("#root").on("click", "#buySell", function () {
+    if ( $(this).hasClass("buyTime")) {
+        if ($(".inp div span").text() === "") 
+            alert("Input data");
+        else if (Number($(".inp div span").text()) > user.wallet.cash)
+            alert("Not enough cash to buy");
+        else {
+            let coinCode = $("#curCoin img").attr("id");
+            let dayIndex = user.currentDay - 1;
+            let coinData = market[dayIndex];
+            let num = (coinData.coins.length);
+            let cname;
+            let money;
+          
+            for (let c of coins) {
+                if (c.code === coinCode) {
+                    cname = c.name;
+                    break;
+                }
+            }
+           
+            for (let i = 0; i < num; i++) {
+                if(coinData.coins[i].code === coinCode){
+                    coinData = coinData.coins[i];
+                    break;
+                }
+            }
+
+            let newRow = 
+                    `<tr class="Added">
+                    <td>${cname}</td>
+                    <td>${Number($(".inp input").val()).toFixed(7)}</td>
+                    <td>${Number($(".inp div span").text())}</td>
+                    <td>${coinData.open}</td>
+                    </tr>`;
+                            
+            $(".wTable").append(newRow);
+            user.wallet.cash -= Number($(".inp div span").text());
+            $(".moneyinWallet td:last span").text(user.wallet.cash);
+
+            $(".inp div span").html("");
+            $(".inp input").val("");
+             
+        }
+    }
+    else if ( $(this).hasClass("sellTime")) {
+        
+    }
+    renderWallet(user);
+   
+})        
