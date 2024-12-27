@@ -731,3 +731,73 @@ $("#root").on("click", "#buySell", function () {
     
 })        
 
+let playInterval = null; // Variable to store the play interval
+let isPlaying = false;   // State to track whether the simulation is running
+
+function startPlay(user, $playButton) {
+    if (isPlaying) return; // Prevents starting multiple intervals
+
+    isPlaying = true;
+    $playButton.html(`
+        <i class="fa-solid fa-pause"></i> Pause
+    `);
+
+    playInterval = setInterval(() => {
+        if (user.currentDay < 365) {
+            $("#nextDay").click(); // Simulate the "Next Day" button
+        } else {
+            stopSimulation(user);
+            pausePlay($playButton); // Ensure Play/Pause UI is updated
+        }
+    }, 100); // Fast-forward interval of 100ms
+}
+
+function pausePlay($playButton) {
+    if (playInterval) {
+        clearInterval(playInterval); // Stop the interval
+        playInterval = null;
+    }
+    isPlaying = false;
+
+    $playButton.html(`
+        <i class="fa-solid fa-play"></i> Play
+    `);
+}
+
+$("#root").on("click", "#play", function () {
+    const $playButton = $(this);
+    const user = states.users.find(user => user.name === current_profile);
+
+    if (isPlaying) {
+        pausePlay($playButton);
+    } else {
+        startPlay(user, $playButton);
+    }
+});
+
+function stopSimulation(user) {
+    if (playInterval) {
+        clearInterval(playInterval);
+        playInterval = null;
+    }
+    isPlaying = false;
+
+    // Final wallet value display and animation
+    const finalWalletValue = $("h1.cashIs span").text();
+    $("h1.cashIs").html(`
+        <span class="heartbeat">$${finalWalletValue}</span>
+    `);
+    $(".trading").remove();
+
+    setTimeout(() => {
+        $("h1.cashIs span").addClass("heartbeat");
+    }, 100);
+}
+
+// Ensure the simulation stops at Day 365
+$("#root").on("click", "#nextDay", function () {
+    const user = states.users.find(user => user.name === current_profile);
+    if (user && user.currentDay === 365) {
+        stopSimulation(user);
+    }
+});
