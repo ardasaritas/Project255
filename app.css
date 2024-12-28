@@ -383,7 +383,8 @@ button#profile {
 .bar { position: absolute; width: 10px; border: 1px solid black; z-index:1 ;}
 
 #coinData {
-    color: #999;
+    color: red;
+    margin-left: 15px;
 }
 
 
