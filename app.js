@@ -92,7 +92,7 @@ function renderTradingPage(user) {
                        
                      `);
 
-    //renderWalletDay(user) 
+    renderWalletDay(user) 
 }
 
 
@@ -134,13 +134,12 @@ function renderProfile() {
  
 
 function renderWalletDay(user) {
-
-    let dayIndex = user.currentDay-1;
+    let dayIndex = user.currentDay - 1;
     let coinData = market[dayIndex];
-    
-    let num;
 
-    $("h1 span").text(user.wallet.cash 
+    // Update total wallet value
+    $("h1 span").text(
+        user.wallet.cash
         + user.wallet.Cordana * coinData.coins[0].close
         + user.wallet.Avalanche * coinData.coins[1].close
         + user.wallet.Bitcoin * coinData.coins[2].close
@@ -152,167 +151,48 @@ function renderWalletDay(user) {
         + user.wallet.Ripple * coinData.coins[8].close
     );
 
+    // Update cash display
     $(".moneyinWallet td:last span").text(user.wallet.cash);
-    let currentCoin = $("#curCoin img").attr("id"); 
-    if ( ($(".wTable tr").length === 2)){ 
-        if(!(user.wallet.Cordana !== 0 &&
-            user.wallet.Avalanche !== 0 &&
-            user.wallet.Bitcoin !== 0 &&
-            user.wallet.Dogecoin !== 0 &&
-            user.wallet.Ethereum !== 0 &&
-            user.wallet.Polygon !== 0 &&
-            user.wallet.Synthetix !== 0 &&
-            user.wallet.Tron !== 0 &&
-             user.wallet.Ripple !== 0)) { 
-            for (let i = 0; i < coins.length; i++) {
-                if (user.wallet[coins[i].name] !== 0){
-                    let newRow = 
-                                `<tr class="Added">
-                                <td><img src="./images/${coins[i].code}.png">${coins[i].name}</td>
-                                <td>${user.wallet[coins[i].name]}</td>
-                                <td>${user.wallet[coins[i].name]*coinData.open}</td>
-                                <td>${coinData.open}</td>
-                                </tr>`; 
-                                                            
-                   $(".wTable").append(newRow);
-                }
+
+    // Loop through all coins and handle their rows
+    for (let i = 0; i < coins.length; i++) {
+        let coinName = coins[i].name;
+        let coinCode = coins[i].code;
+        let coinAmount = user.wallet[coinName];
+        let coinValue = coinAmount * coinData.coins[i].close;
+
+        // Check if the row for the coin exists
+        let $existingRow = $(".wTable tr").filter(function () {
+            return $(this).find("td:first").text().includes(coinName);
+        });
+
+        if (coinAmount === 0) {
+            // Remove the row if the coin balance is zero
+            if ($existingRow.length > 0) {
+                $existingRow.remove();
             }
+        } else if ($existingRow.length > 0) {
+            // Update the row if it exists
+            $existingRow.children().eq(1).text(coinAmount); // Update amount
+            $existingRow.children().eq(2).text(coinValue); // Update total value
+            $existingRow.children().eq(3).text(coinData.coins[i].close); // Update price
+        } else {
+            // Append a new row if it doesn't exist
+            let newRow = 
+                `<tr class="Added">
+                    <td><img src="./images/${coinCode}.png">${coinName}</td>
+                    <td>${coinAmount}</td>
+                    <td>${coinValue}</td>
+                    <td>${coinData.coins[i].close}</td>
+                </tr>`;
+            $(".wTable").append(newRow);
         }
     }
-
-    $(".Added").each(function () {
-        switch ($(this).children().eq(0).text()) {
-            case "Cordana":
-                if (user.wallet.Cordana === 0){
-                    $(this).remove();
-                }
-                else {
-                    $(this).children().eq(1).text(user.wallet.Cordana);
-                    num = parseFloat($(this).children().eq(1).text()) * coinData.coins[0].close;
-                    $(this).children().eq(2).text(num);
-                    console.log(num);
-                    if (user.currentDay > 1) {
-                        $(this).children().eq(3).text(market[dayIndex-1].coins[0].close);
-                    }
-                }
-                break;
-            case "Avalanche":
-                if (user.wallet.Avalanche === 0){
-                    $(this).remove();
-                }
-                else {
-                    $(this).children().eq(1).text(user.wallet.Avalanche);
-                    num = parseFloat($(this).children().eq(1).text()) * coinData.coins[1].close;
-                    $(this).children().eq(2).text(num);
-                    console.log(num);
-                    if (user.currentDay > 1) {
-                        $(this).children().eq(3).text(market[dayIndex-1].coins[1].close);
-                    }
-                }
-                break;
-            case "Bitcoin":
-                if (user.wallet.Bitcoin === 0){
-                    $(this).remove();
-                }
-                else {
-                    $(this).children().eq(1).text(user.wallet.Bitcoin);
-                    num = parseFloat($(this).children().eq(1).text()) * coinData.coins[2].close;
-                    $(this).children().eq(2).text(num);
-                    console.log(num);
-                    if (user.currentDay > 1) {
-                        $(this).children().eq(3).text(market[dayIndex-1].coins[2].close);
-                    }
-                }
-                break;
-            case "Dogecoin":
-                if (user.wallet.Dogecoin === 0){
-                    $(this).remove();
-                }
-                else {
-                    $(this).children().eq(1).text(user.wallet.Dogecoin);
-                    num = parseFloat($(this).children().eq(1).text()) * coinData.coins[3].close;
-                    $(this).children().eq(2).text(num);
-                    console.log(num);
-                    if (user.currentDay > 1) {
-                        $(this).children().eq(3).text(market[dayIndex-1].coins[3].close);
-                    }
-                }
-                break;
-            case "Ethereum":
-                if (user.wallet.Ethereum === 0){
-                    $(this).remove();
-                }
-                else {
-                    $(this).children().eq(1).text(user.wallet.Ethereum);
-                    num = parseFloat($(this).children().eq(1).text()) * coinData.coins[4].close;
-                    $(this).children().eq(2).text(num);
-                    console.log(num);
-                    if (user.currentDay > 1) {
-                        $(this).children().eq(3).text(market[dayIndex-1].coins[4].close);
-                    }
-                }
-                break;
-            case "Polygon":
-                if (user.wallet.Polygon === 0){
-                    $(this).remove();
-                }
-                else {
-                    $(this).children().eq(1).text(user.wallet.Polygon);
-                    num = parseFloat($(this).children().eq(1).text()) * coinData.coins[5].close;
-                    $(this).children().eq(2).text(num);
-                    if (user.currentDay > 1) {
-                        $(this).children().eq(3).text(market[dayIndex-1].coins[5].close);
-                    }
-                }
-                break;
-            case "Synthetix":
-                if (user.wallet.Synthetix === 0){
-                    $(this).remove();
-                }
-                else {
-                    $(this).children().eq(1).text(user.wallet.Synthetix);
-                    num = parseFloat($(this).children().eq(1).text()) * coinData.coins[6].close;
-                    $(this).children().eq(2).text(num);
-                    console.log(num);
-                    if (user.currentDay > 1) {
-                        $(this).children().eq(3).text(market[dayIndex-1].coins[6].close);
-                    }
-                }
-                break;
-            case "Tron":
-                if (user.wallet.Tron === 0){
-                    $(this).remove();
-                }
-                else {
-                    $(this).children().eq(1).text(user.wallet.Tron);
-                    num = parseFloat($(this).children().eq(1).text()) * coinData.coins[7].close;
-                    $(this).children().eq(2).text(num);
-                    console.log(num);
-                    if (user.currentDay > 1) {
-                        $(this).children().eq(3).text(market[dayIndex-1].coins[7].close);
-                    }
-                }
-                break;
-            case "Ripple":
-                if (user.wallet.Ripple === 0){
-                    $(this).remove();
-                }
-                else {
-                    $(this).children().eq(1).text(user.wallet.Ripple);
-                    num = parseFloat($(this).children().eq(1).text()) * coinData.coins[8].close;
-                    $(this).children().eq(2).text(num);
-                    console.log(num);
-                    if (user.currentDay > 1) {
-                        $(this).children().eq(3).text(market[dayIndex-1].coins[8].close);
-                    }
-                }
-                break;
-        }
-    })
 
     console.log(user.wallet);
     console.log($("h1 span").text());
 }
+
 
 function renderTransactions () {
 
@@ -737,31 +617,31 @@ $("#root").on("click", "#buySell", function () {
                         check = 1;
                     }
                     else {
-                        console.log(check)
-                        if (check === 0) {
-                            let newRow = 
-                            `<tr class="Added">
-                            <td><img src="./images/${currentCoin}.png">${cname}</td>
-                            <td>${Number($(".inp input").val())}</td>
-                            <td>${Number($(".inp div span").text())}</td>
-                            <td>${coinData.open}</td>
-                            </tr>`;
+                        // console.log(check)
+                        // if (check === 0) {
+                        //     let newRow = 
+                        //     `<tr class="Added">
+                        //     <td><img src="./images/${currentCoin}.png">${cname}</td>
+                        //     <td>${Number($(".inp input").val())}</td>
+                        //     <td>${Number($(".inp div span").text())}</td>
+                        //     <td>${coinData.open}</td>
+                        //     </tr>`;
 
-                            $(".wTable").append(newRow);
-                        }
+                        //     $(".wTable").append(newRow);
+                        // }
                     }
                 })
             }
             else {
-                let newRow = 
-                `<tr class="Added">
-                <td><img src="./images/${currentCoin}.png">${cname}</td>
-                <td>${Number($(".inp input").val())}</td>
-                <td>${Number($(".inp div span").text())}</td>
-                <td>${coinData.open}</td>
-                </tr>`; 
+                //  let newRow = 
+                //  `<tr class="Added">
+                //  <td><img src="./images/${currentCoin}.png">${cname}</td>
+                //  <td>${Number($(".inp input").val())}</td>
+                //  <td>${Number($(".inp div span").text())}</td>
+                //  <td>${coinData.open}</td>
+                //  </tr>`; 
 
-                $(".wTable").append(newRow);
+                //  $(".wTable").append(newRow);
             }
 
             user.wallet.cash -= Number($(".inp div span").text());
