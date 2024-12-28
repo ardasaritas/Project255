@@ -183,7 +183,7 @@ function renderWalletDay(user) {
         switch ($(this).children().eq(0).text()) {
             case "Cordana":
                 if (user.wallet.Cordana === 0){
-                    $(this).children().remove();
+                    $(this).remove();
                 }
                 else {
                     $(this).children().eq(1).text(user.wallet.Cordana);
@@ -197,7 +197,7 @@ function renderWalletDay(user) {
                 break;
             case "Avalanche":
                 if (user.wallet.Avalanche === 0){
-                    $(this).children().remove();
+                    $(this).remove();
                 }
                 else {
                     $(this).children().eq(1).text(user.wallet.Avalanche);
@@ -211,7 +211,7 @@ function renderWalletDay(user) {
                 break;
             case "Bitcoin":
                 if (user.wallet.Bitcoin === 0){
-                    $(this).children().remove();
+                    $(this).remove();
                 }
                 else {
                     $(this).children().eq(1).text(user.wallet.Bitcoin);
@@ -225,7 +225,7 @@ function renderWalletDay(user) {
                 break;
             case "Dogecoin":
                 if (user.wallet.Dogecoin === 0){
-                    $(this).children().remove();
+                    $(this).remove();
                 }
                 else {
                     $(this).children().eq(1).text(user.wallet.Dogecoin);
@@ -239,7 +239,7 @@ function renderWalletDay(user) {
                 break;
             case "Ethereum":
                 if (user.wallet.Ethereum === 0){
-                    $(this).children().remove();
+                    $(this).remove();
                 }
                 else {
                     $(this).children().eq(1).text(user.wallet.Ethereum);
@@ -253,13 +253,12 @@ function renderWalletDay(user) {
                 break;
             case "Polygon":
                 if (user.wallet.Polygon === 0){
-                    $(this).children().remove();
+                    $(this).remove();
                 }
                 else {
                     $(this).children().eq(1).text(user.wallet.Polygon);
                     num = parseFloat($(this).children().eq(1).text()) * coinData.coins[5].close;
                     $(this).children().eq(2).text(num);
-                    console.log(num);
                     if (user.currentDay > 1) {
                         $(this).children().eq(3).text(market[dayIndex-1].coins[5].close);
                     }
@@ -267,7 +266,7 @@ function renderWalletDay(user) {
                 break;
             case "Synthetix":
                 if (user.wallet.Synthetix === 0){
-                    $(this).children().remove();
+                    $(this).remove();
                 }
                 else {
                     $(this).children().eq(1).text(user.wallet.Synthetix);
@@ -281,7 +280,7 @@ function renderWalletDay(user) {
                 break;
             case "Tron":
                 if (user.wallet.Tron === 0){
-                    $(this).children().remove();
+                    $(this).remove();
                 }
                 else {
                     $(this).children().eq(1).text(user.wallet.Tron);
@@ -295,7 +294,7 @@ function renderWalletDay(user) {
                 break;
             case "Ripple":
                 if (user.wallet.Ripple === 0){
-                    $(this).children().remove();
+                    $(this).remove();
                 }
                 else {
                     $(this).children().eq(1).text(user.wallet.Ripple);
@@ -728,7 +727,7 @@ $("#root").on("click", "#buySell", function () {
             if ( $(".wTable tr").length > 2 ) {
                 let check = 0;
                 $(".wTable tr:gt(1)").each(function () {
-                    if ($(this).children().eq(0).text() === cname && check === 0) {
+                    if ($(this).children().eq(0).text() === cname) {
                         let sumA = Number(Number($(this).children().eq(1).text()) + Number($(".inp input").val()));
                         let sumS = Number(Number($(this).children().eq(2).text()) + Number($(".inp div span").text()));
                         $(this).children().eq(1).text(sumA);
@@ -736,16 +735,19 @@ $("#root").on("click", "#buySell", function () {
                         $(this).children().eq(3).text(coinData.open);
                         check = 1;
                     }
-                    else if (check !== 1){
-                        let newRow = 
-                        `<tr class="Added">
-                        <td>${cname}</td>
-                        <td>${Number($(".inp input").val())}</td>
-                        <td>${Number($(".inp div span").text())}</td>
-                        <td>${coinData.open}</td>
-                        </tr>`;
-                                
-                         $(".wTable").append(newRow);
+                    else {
+                        console.log(check)
+                        if (check === 0) {
+                            let newRow = 
+                            `<tr class="Added">
+                            <td>${cname}</td>
+                            <td>${Number($(".inp input").val())}</td>
+                            <td>${Number($(".inp div span").text())}</td>
+                            <td>${coinData.open}</td>
+                            </tr>`;
+
+                            $(".wTable").append(newRow);
+                        }
                     }
                 })
             }
@@ -757,8 +759,8 @@ $("#root").on("click", "#buySell", function () {
                 <td>${Number($(".inp div span").text())}</td>
                 <td>${coinData.open}</td>
                 </tr>`; 
-                        
-                 $(".wTable").append(newRow);
+
+                $(".wTable").append(newRow);
             }
 
             user.wallet.cash -= Number($(".inp div span").text());
@@ -835,7 +837,7 @@ function startPlay(user, $playButton) {
             stopSimulation();
             pausePlay($playButton); // Ensure Play/Pause UI is updated
         }
-    }, 2); // Fast-forward interval of 100ms
+    }, 100); // Fast-forward interval of 100ms
 }
 
 function pausePlay($playButton) {
