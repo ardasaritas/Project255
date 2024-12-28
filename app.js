@@ -137,7 +137,7 @@ function renderWalletDay(user) {
 
     let dayIndex = user.currentDay-1;
     let coinData = market[dayIndex];
-  
+    
     let num;
 
     $("h1 span").text(user.wallet.cash 
@@ -168,7 +168,7 @@ function renderWalletDay(user) {
                 if (user.wallet[coins[i].name] !== 0){
                     let newRow = 
                                 `<tr class="Added">
-                                <td><img src="./images/${currentCoin}.png">${coins[i].name}</td>
+                                <td><img src="./images/${coins[i].code}.png">${coins[i].name}</td>
                                 <td>${user.wallet[coins[i].name]}</td>
                                 <td>${user.wallet[coins[i].name]*coinData.open}</td>
                                 <td>${coinData.open}</td>
