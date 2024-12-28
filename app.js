@@ -2,44 +2,7 @@ let states = {active: null}
 let current_profile = null
 
 let storedData = localStorage.getItem("states") 
-states =  storedData ? JSON.parse( storedData) :  { active: null, users : [
-    {name: "Işık Dönger", wallet: {cash: 1000,  Cordana: 0,
-        Avalanche: 0,
-        Bitcoin: 0,
-        Dogecoin: 0,
-        Ethereum: 0,
-        Polygon: 0,
-        Synthetix: 0,
-        Tron: 0,
-        Ripple: 0}, currentDay : 1, currentDate : "1 January 2021", market : []},
-    {name: "Arda Sarıtaş", wallet: {cash: 1000,  Cordana: 0,
-        Avalanche: 0,
-        Bitcoin: 0,
-        Dogecoin: 0,
-        Ethereum: 0,
-        Polygon: 0,
-        Synthetix: 0,
-        Tron: 0,
-        Ripple: 0}, currentDay : 1, currentDate : "1 January 2021", market : []},
-    {name: "İbrahim Can Doğan", wallet: {cash: 1000,  Cordana: 0,
-        Avalanche: 0,
-        Bitcoin: 0,
-        Dogecoin: 0,
-        Ethereum: 0,
-        Polygon: 0,
-        Synthetix: 0,
-        Tron: 0,
-        Ripple: 0}, currentDay : 1, currentDate : "1 January 2021", market : []},
-    {name: "Yağız Çetin", wallet: {cash: 1000,  Cordana: 0,
-        Avalanche: 0,
-        Bitcoin: 0,
-        Dogecoin: 0,
-        Ethereum: 0,
-        Polygon: 0,
-        Synthetix: 0,
-        Tron: 0,
-        Ripple: 0}, currentDay : 1, currentDate : "1 January 2021", market : []}
-    ]}
+states =  storedData ? JSON.parse( storedData) :  { active: null, users : [] }
 
 // Renders page
 renderPage()
@@ -147,13 +110,14 @@ function renderProfile() {
                 renderChartSliding("btc", i);
             }
         }
-        else {
+        else if (user.currentDay !== 365)
+        {
             for (let i = user.currentDay - 365; i <= Math.min(user.currentDay, 365); i++) {
                 renderChartSliding("btc", i);
             }
-            if (user.currentDay === 365) {
-                stopSimulation()
-            }
+        }
+        else {
+            stopSimulation()
         }
         $("#user").html(`<i class="fa-solid fa-user fa-xs"></i>
             <span>${current_profile}</span>
@@ -174,11 +138,15 @@ function renderProfile() {
 
 function renderWalletDay(user) {
     let dayIndex = user.currentDay - 1;
-    let coinData = market[dayIndex];
+    let coinData
+    if (user.currentDay === 1) {
+        coinData = market[dayIndex]
+    }
+    else  coinData = market[dayIndex-1];
 
-    // Update total wallet value
-    $("h1 span").text(
-        user.wallet.cash
+    let walletCheck;
+    if (user.currentDay === 1) {
+        walletCheck =  user.wallet.cash
         + user.wallet.Cordana * coinData.coins[0].open
         + user.wallet.Avalanche * coinData.coins[1].open
         + user.wallet.Bitcoin * coinData.coins[2].open
@@ -188,17 +156,38 @@ function renderWalletDay(user) {
         + user.wallet.Synthetix * coinData.coins[6].open
         + user.wallet.Tron * coinData.coins[7].open
         + user.wallet.Ripple * coinData.coins[8].open
-    );
-
+    }
+    else {
+        walletCheck =  user.wallet.cash
+        + user.wallet.Cordana * coinData.coins[0].close
+        + user.wallet.Avalanche * coinData.coins[1].close
+        + user.wallet.Bitcoin * coinData.coins[2].close
+        + user.wallet.Dogecoin * coinData.coins[3].close
+        + user.wallet.Ethereum * coinData.coins[4].close
+        + user.wallet.Polygon * coinData.coins[5].close
+        + user.wallet.Synthetix * coinData.coins[6].close
+        + user.wallet.Tron * coinData.coins[7].close
+        + user.wallet.Ripple * coinData.coins[8].close
+    }
+   
+    // Update total wallet value
+    $("h1 span").text(parseFloat(walletCheck).toFixed(Math.max(0, 6 - Math.floor(walletCheck).toString().length)));
+   
     // Update cash display
-    $(".moneyinWallet td:last span").text(user.wallet.cash);
-
+    $(".moneyinWallet td:last span").text(parseFloat(user.wallet.cash).toFixed(Math.max(0, 6 - Math.floor(user.wallet.cash).toString().length)));
+    
     // Loop through all coins and handle their rows
     for (let i = 0; i < coins.length; i++) {
         let coinName = coins[i].name;
         let coinCode = coins[i].code;
-        let coinAmount = user.wallet[coinName];
-        let coinValue = coinAmount * coinData.coins[i].open;
+        let coinAmount = user.wallet[coinName];  
+        let closeData;
+        if (user.currentDay === 1) {
+            closeData = coinData.coins[i].open;
+        }     
+        else closeData = coinData.coins[i].close;
+        let coinValue = coinAmount * closeData;
+        
 
         // Check if the row for the coin exists
         let $existingRow = $(".wTable tr").filter(function () {
@@ -212,21 +201,24 @@ function renderWalletDay(user) {
             }
         } else if ($existingRow.length > 0) {
             // Update the row if it exists
-            $existingRow.children().eq(1).text(coinAmount); // Update amount
+            $existingRow.children().eq(1).text(parseFloat(coinAmount).toFixed(Math.max(0, 6 - Math.floor(coinAmount).toString().length))); // Update amount
             $existingRow.children().eq(2).text(parseFloat(coinValue).toFixed(Math.max(0, 6 - Math.floor(coinValue).toString().length))); // Update total value
-            $existingRow.children().eq(3).text(coinData.coins[i].close); // Update price
+            $existingRow.children().eq(3).text(closeData); // Update price
         } else {
             // Append a new row if it doesn't exist
             let newRow = 
                 `<tr class="Added">
                     <td><img src="./images/${coinCode}.png">${coinName}</td>
-                    <td>${coinAmount}</td>
+                    <td>${parseFloat(coinAmount).toFixed(Math.max(0, 6 - Math.floor(coinAmount).toString().length))}</td>
                     <td>${parseFloat(coinValue).toFixed(Math.max(0, 6 - Math.floor(coinValue).toString().length))}</td>
-                    <td>${coinData.coins[i].close}</td>
+                    <td>${closeData}</td>
                 </tr>`;
             $(".wTable").append(newRow);
         }
     }
+
+    console.log(user.wallet);
+    console.log($("h1 span").text());
 }
 
 
@@ -235,7 +227,10 @@ function renderTransactions () {
     let currentCoin = $("#curCoin img").attr("id");
     let dayIndex = user.currentDay - 1;
   
-    let coinData = market[dayIndex];
+    let coinData;
+    if (user.currentDay === 1) 
+        coinData = market[dayIndex];
+    else coinData = market[dayIndex-1];
 
     let num = (coinData.coins.length);
     let money;
@@ -246,9 +241,15 @@ function renderTransactions () {
             break;
         }
     }
-   
-    money = Number($(".inp input").val()) * Number(coinData.open);
-    $(".inp div span").html(money);
+
+    let closeData;
+    if (user.currentDay === 1) {
+        closeData = coinData.open
+    }
+    else closeData = coinData.close;
+
+    money = Number($(".inp input").val()) * Number(closeData);
+    $(".inp div span").html( parseFloat(money).toFixed(Math.max(0, 6 - Math.floor(money).toString().length)));
 } 
 
 function renderCurCoin(coinId, coinName, coinImg) {
@@ -480,7 +481,6 @@ $("#root").on("click", "#nextDay", function () {
         update([]);
     }
     else {
-        // Stop the simulation at the 365th day
         stopSimulation()
     }
 });
@@ -605,6 +605,7 @@ $("#root").on("click", "#buy" ,function () {
                  .addClass("buyTime")
                  .html("Buy");
 })
+
 $("#root").on("click", "#sell",function () {
     $(this).addClass("sellTime");
     $("#buy").removeClass();
@@ -626,7 +627,12 @@ $("#root").on("click", "#buySell", function () {
         else {
             let coinCode = $("#curCoin img").attr("id");
             let dayIndex = user.currentDay - 1;
-            let coinData = market[dayIndex];
+            let coinData;
+            if (user.currentDay === 1)  {
+                coinData = market[dayIndex];
+            }
+            else {coinData = market[dayIndex-1];}
+
             let num = (coinData.coins.length);
             let cname;
             let money;
@@ -644,6 +650,13 @@ $("#root").on("click", "#buySell", function () {
                     break;
                 }
             }
+
+            let closeData;
+            if (user.currentDay === 1) {
+                closeData = coinData.open;
+            }
+            else closeData = coinData.close;
+
             let currentCoin = $("#curCoin img").attr("id"); 
             if ( $(".wTable tr").length > 2 ) {
                 let check = 0;
@@ -653,7 +666,7 @@ $("#root").on("click", "#buySell", function () {
                         let sumS = Number(Number($(this).children().eq(2).text()) + Number($(".inp div span").text()));
                         $(this).children().eq(1).text(sumA);
                         $(this).children().eq(2).text(sumS);
-                        $(this).children().eq(3).text(coinData.open);
+                        $(this).children().eq(3).text(closeData);
                         check = 1;
                     }
                     else {
@@ -687,6 +700,7 @@ $("#root").on("click", "#buySell", function () {
             user.wallet.cash -= Number($(".inp div span").text());
             user.wallet[cname] +=  Number($(".inp input").val());
           
+            console.log(user.wallet);
             update([]);
             renderWalletDay(user)
             $(".inp div span").html("");
@@ -714,7 +728,12 @@ $("#root").on("click", "#buySell", function () {
         }
         else {
             let dayIndex = user.currentDay - 1;
-            let coinData = market[dayIndex];
+            let coinData
+            if (user.currentDay === 1) {
+                coinData = market[dayIndex];
+            }
+            else coinData = market[dayIndex-1];
+
             let num = (coinData.coins.length);
           
             for (let i = 0; i < num; i++) {
@@ -724,8 +743,12 @@ $("#root").on("click", "#buySell", function () {
                 }
             }
 
-            user.wallet.cash -= Number($(".inp div span").text());
-            user.wallet[cname] +=  Number($(".inp input").val());
+            console.log(user.wallet);
+            console.log(user.wallet[cname]);
+
+            user.wallet.cash += Number($(".inp div span").text());
+            user.wallet[cname] -=  Number($(".inp input").val());
+            console.log(user.wallet[cname]);
             update([]);
             renderWalletDay(user)
             $(".inp div span").html("");
