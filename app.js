@@ -91,7 +91,6 @@ function renderTradingPage(user) {
                         </div>
                        
                      `);
-
     renderWalletDay(user) 
 }
 
@@ -140,15 +139,15 @@ function renderWalletDay(user) {
     // Update total wallet value
     $("h1 span").text(
         user.wallet.cash
-        + user.wallet.Cordana * coinData.coins[0].close
-        + user.wallet.Avalanche * coinData.coins[1].close
-        + user.wallet.Bitcoin * coinData.coins[2].close
-        + user.wallet.Dogecoin * coinData.coins[3].close
-        + user.wallet.Ethereum * coinData.coins[4].close
-        + user.wallet.Polygon * coinData.coins[5].close
-        + user.wallet.Synthetix * coinData.coins[6].close
-        + user.wallet.Tron * coinData.coins[7].close
-        + user.wallet.Ripple * coinData.coins[8].close
+        + user.wallet.Cordana * coinData.coins[0].open
+        + user.wallet.Avalanche * coinData.coins[1].open
+        + user.wallet.Bitcoin * coinData.coins[2].open
+        + user.wallet.Dogecoin * coinData.coins[3].open
+        + user.wallet.Ethereum * coinData.coins[4].open
+        + user.wallet.Polygon * coinData.coins[5].open
+        + user.wallet.Synthetix * coinData.coins[6].open
+        + user.wallet.Tron * coinData.coins[7].open
+        + user.wallet.Ripple * coinData.coins[8].open
     );
 
     // Update cash display
@@ -159,7 +158,7 @@ function renderWalletDay(user) {
         let coinName = coins[i].name;
         let coinCode = coins[i].code;
         let coinAmount = user.wallet[coinName];
-        let coinValue = coinAmount * coinData.coins[i].close;
+        let coinValue = coinAmount * coinData.coins[i].open;
 
         // Check if the row for the coin exists
         let $existingRow = $(".wTable tr").filter(function () {
@@ -687,8 +686,8 @@ $("#root").on("click", "#buySell", function () {
             console.log(user.wallet);
             console.log(user.wallet[cname]);
 
-            user.wallet.cash += ( Number($(".inp input").val()) * coinData.open);
-            user.wallet[cname] -= Number($(".inp input").val());
+            user.wallet.cash -= Number($(".inp div span").text());
+            user.wallet[cname] +=  Number($(".inp input").val());
             console.log(user.wallet[cname]);
             update([]);
             renderWalletDay(user)
