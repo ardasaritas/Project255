@@ -92,7 +92,7 @@ function renderTradingPage(user) {
                        
                      `);
 
-    renderWalletDay(user) 
+    //renderWalletDay(user) 
 }
 
 
@@ -102,6 +102,7 @@ function renderProfile() {
         renderTradingPage(user)
         renderCurCoin("btc", "Bitcoin", "./images/btc.png");
         const $bitcoin = $("#coins img[src='./images/btc.png']"); 
+        renderWalletDay(user)
         startPulsating($bitcoin);
         currentAnimatingCoin = $bitcoin;
         // When the profile is opened, initialize it with btc
@@ -152,7 +153,7 @@ function renderWalletDay(user) {
     );
 
     $(".moneyinWallet td:last span").text(user.wallet.cash);
-
+    let currentCoin = $("#curCoin img").attr("id"); 
     if ( ($(".wTable tr").length === 2)){ 
         if(!(user.wallet.Cordana !== 0 &&
             user.wallet.Avalanche !== 0 &&
@@ -167,7 +168,7 @@ function renderWalletDay(user) {
                 if (user.wallet[coins[i].name] !== 0){
                     let newRow = 
                                 `<tr class="Added">
-                                <td>${coins[i].name}</td>
+                                <td><img src="./images/${currentCoin}.png">${coins[i].name}</td>
                                 <td>${user.wallet[coins[i].name]}</td>
                                 <td>${user.wallet[coins[i].name]*coinData.open}</td>
                                 <td>${coinData.open}</td>
@@ -724,7 +725,7 @@ $("#root").on("click", "#buySell", function () {
                     break;
                 }
             }
-            
+            let currentCoin = $("#curCoin img").attr("id"); 
             if ( $(".wTable tr").length > 2 ) {
                 let check = 0;
                 $(".wTable tr:gt(1)").each(function () {
@@ -739,7 +740,7 @@ $("#root").on("click", "#buySell", function () {
                     else if (check !== 1){
                         let newRow = 
                         `<tr class="Added">
-                        <td>${cname}</td>
+                        <td><img src="./images/${currentCoin}.png">${cname}</td>
                         <td>${Number($(".inp input").val())}</td>
                         <td>${Number($(".inp div span").text())}</td>
                         <td>${coinData.open}</td>
@@ -752,7 +753,7 @@ $("#root").on("click", "#buySell", function () {
             else {
                 let newRow = 
                 `<tr class="Added">
-                <td>${cname}</td>
+                <td><img src="./images/${currentCoin}.png">${cname}</td>
                 <td>${Number($(".inp input").val())}</td>
                 <td>${Number($(".inp div span").text())}</td>
                 <td>${coinData.open}</td>
