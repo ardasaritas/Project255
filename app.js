@@ -1,8 +1,46 @@
 let states = {active: null}
 let current_profile = null
 
+localStorage.clear()
 let storedData = localStorage.getItem("states") 
-states =  storedData ? JSON.parse( storedData) :  { active: null, users : [] }
+states =  storedData ? JSON.parse( storedData) :  { active: null, users : [
+    {name: "Işık Dönger", wallet: {cash: 1000,  Cordana: 0,
+        Avalanche: 0,
+        Bitcoin: 0,
+        Dogecoin: 0,
+        Ethereum: 0,
+        Polygon: 0,
+        Synthetix: 0,
+        Tron: 0,
+        Ripple: 0}, currentDay : 1, currentDate : "1 January 2021", market : []},
+    {name: "İbrahim Can Doğan", wallet: {cash: 1000,  Cordana: 0,
+        Avalanche: 0,
+        Bitcoin: 0,
+        Dogecoin: 0,
+        Ethereum: 0,
+        Polygon: 0,
+        Synthetix: 0,
+        Tron: 0,
+        Ripple: 0}, currentDay : 1, currentDate : "1 January 2021", market : []},
+    {name: "Arda Sarıtaş", wallet: {cash: 1000,  Cordana: 0,
+        Avalanche: 0,
+        Bitcoin: 0,
+        Dogecoin: 0,
+        Ethereum: 0,
+        Polygon: 0,
+        Synthetix: 0,
+        Tron: 0,
+        Ripple: 0}, currentDay : 1, currentDate : "1 January 2021", market : []},
+    {name: "Yağız Çetin", wallet: {cash: 1000,  Cordana: 0,
+        Avalanche: 0,
+        Bitcoin: 0,
+        Dogecoin: 0,
+        Ethereum: 0,
+        Polygon: 0,
+        Synthetix: 0,
+        Tron: 0,
+        Ripple: 0}, currentDay : 1, currentDate : "1 January 2021", market : []}]}
+localStorage.setItem("states", JSON.stringify(states))
 
 // Renders page
 renderPage()
@@ -216,9 +254,6 @@ function renderWalletDay(user) {
             $(".wTable").append(newRow);
         }
     }
-
-    console.log(user.wallet);
-    console.log($("h1 span").text());
 }
 
 
@@ -546,6 +581,7 @@ function startPulsating($coin) {
 }
 
 $("#root").on("click", "#coins img", function () {
+    const user = states.users.find(user => user.name === current_profile);
     const $clickedCoin = $(this);
     const coinId = $clickedCoin.attr("id"); // Get the coin's id 
     const coinName = $clickedCoin.data("name"); // Get the coin's name from data-name
@@ -700,7 +736,6 @@ $("#root").on("click", "#buySell", function () {
             user.wallet.cash -= Number($(".inp div span").text());
             user.wallet[cname] +=  Number($(".inp input").val());
           
-            console.log(user.wallet);
             update([]);
             renderWalletDay(user)
             $(".inp div span").html("");
@@ -743,12 +778,8 @@ $("#root").on("click", "#buySell", function () {
                 }
             }
 
-            console.log(user.wallet);
-            console.log(user.wallet[cname]);
-
             user.wallet.cash += Number($(".inp div span").text());
             user.wallet[cname] -=  Number($(".inp input").val());
-            console.log(user.wallet[cname]);
             update([]);
             renderWalletDay(user)
             $(".inp div span").html("");
