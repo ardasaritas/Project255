@@ -838,23 +838,21 @@ function startPlay(user, $playButton) {
         if (user.currentDay < 365) {
             $("#nextDay").click(); // Simulate the "Next Day" button
         } else {
-            stopSimulation(user);
+            stopSimulation();
             pausePlay($playButton); // Ensure Play/Pause UI is updated
         }
-    }, 100); // Fast-forward interval of 100ms
+    }, 2); // Fast-forward interval of 100ms
 }
 
 function pausePlay($playButton) {
-    if (playInterval) {
+    if (playInterval != null) {
         clearInterval(playInterval); // Stop the interval
         playInterval = null;
     }
     isPlaying = false;
-
-    $playButton.html(`
-        <i class="fa-solid fa-play"></i> Play
-    `);
+    
 }
+
 
 $("#root").on("click", "#play", function () {
     const $playButton = $(this);
@@ -867,7 +865,7 @@ $("#root").on("click", "#play", function () {
     }
 });
 
-function stopSimulation(user) {
+function stopSimulation() {
     if (playInterval) {
         clearInterval(playInterval);
         playInterval = null;
@@ -875,15 +873,13 @@ function stopSimulation(user) {
     isPlaying = false;
 
     // Final wallet value display and animation
-    const finalWalletValue = $("h1.cashIs span").text();
-    $("h1.cashIs").html(`
-        <span class="heartbeat">$${finalWalletValue}</span>
-    `);
     $(".trading").remove();
-
-    setTimeout(() => {
-        $("h1.cashIs span").addClass("heartbeat");
-    }, 100);
+    
+    const $cashIs = $("#root").find(".cashIs");
+    $cashIs.addClass("heartbeat");
+    
+    const $playButton =  $("#root").find("#play")
+    $playButton.html(`<i class="fa-solid fa-play"></i> Play`)
 }
 
 // Ensure the simulation stops at Day 365

@@ -438,3 +438,15 @@ tr {color: black; background-color: yellowgreen;}
 
 .buyTime {background: green; color: white;}
 .sellTime {background: red; color: white;}
+
+.heartbeat {
+    animation: heartbeat 2s ease 3; /* animate 3 times */
+}
+
+@keyframes heartbeat {
+    50% { transform : scale(1.4)}
+}
+
+.cashIs {
+    margin-top: 15px;
+}
