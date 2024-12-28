@@ -4,7 +4,7 @@ let current_profile = null
 let storedData = localStorage.getItem("states") 
 states =  storedData ? JSON.parse( storedData) :  { active: null, users : [] }
 
-// renders page
+// Renders page
 renderPage()
 
 function update(fns) {
@@ -92,10 +92,7 @@ function renderTradingPage(user) {
                        
                      `);
 
-    renderWalletDay(user)
-    // renderCoins(user);
-    // drawGraph(user);
-    // updateDate(user);
+    renderWalletDay(user) 
 }
 
 
@@ -364,7 +361,7 @@ function renderChartSliding(selectedCoin, day) {
     // Find the selected coin's data for all days to compute its range
     const allCoinData = market.map(dayData =>
         dayData.coins.find(coin => coin.code === selectedCoin)
-    ).filter(Boolean); // Filter out null/undefined entries
+    )
 
     const minPrice = Math.min(...allCoinData.map(coin => Math.min(coin.low, coin.open, coin.close)));
     const maxPrice = Math.max(...allCoinData.map(coin => Math.max(coin.high, coin.open, coin.close)));
@@ -376,7 +373,7 @@ function renderChartSliding(selectedCoin, day) {
     // Normalize a given value to fit within the chart height
     const normalize = value => ((value - minPrice) / (maxPrice - minPrice)) * chartHeight;
 
-    // If day exceeds 120, apply sliding window logic
+    // If day > 120, sliding window
     if (day > 120) {
         chartContainer.children(".stick:first").remove();
         chartContainer.children(".bar:first").remove();
@@ -466,7 +463,6 @@ function renderChartSliding(selectedCoin, day) {
     }
       $(".upperLabel").css("top", "-10px")
                     .text(`$${maxPrice}`)
-                    //.css("right", "20px")
     // -------------------
 
     if ($(".bottomLabel").length === 0) {
@@ -481,7 +477,7 @@ function renderChartSliding(selectedCoin, day) {
     
     $(".bottomLabel").css("bottom", "-10px")
                    .text(`$${minPrice}`)
-                   //.css("right", "20px")
+                   
 
 }
 
@@ -532,7 +528,6 @@ $("#root").on("click", "#prompt button", function() {
         Tron: 0,
         Ripple: 0}, currentDay : 1, currentDate : "1 January 2021", market : []}
     states.users.push(user)
-    //localStorage.setItem(states, JSON.parse(states))
     $("*:not(#prompt):not(#prompt *):not(.profile button)").css("background-color", "");
     $("#prompt").remove()
     update([renderProfiles])
@@ -540,7 +535,7 @@ $("#root").on("click", "#prompt button", function() {
 
 function getNextDate(currentDate) {
     const date = new Date(currentDate);
-    date.setDate(date.getDate() + 1); // Increment the day
+    date.setDate(date.getDate() + 1);  
     return date.toLocaleDateString("en-GB", { day: 'numeric', month: 'long', year: 'numeric' });
 }
 
@@ -598,11 +593,11 @@ $("#root").on("click", "#coins img", function () {
     if (currentAnimatingCoin) {
         currentAnimatingCoin.stop(true, true); // Stop the animation
         currentAnimatingCoin.css("width", "30px"); // Reset its size
-        currentAnimatingCoin.data("animating", false); // Clear its animating state
+        currentAnimatingCoin.data("animating", false);
     }
 
     // Start animation for the clicked coin
-    $selected.data("animating", true);  // Mark it as animating
+    $selected.data("animating", true); 
     currentAnimatingCoin = $selected; // Update the current animating coin
 
     function animateLoop() {
@@ -632,10 +627,10 @@ function startPulsating($coin) {
 
 $("#root").on("click", "#coins img", function () {
     const $clickedCoin = $(this);
-    const coinId = $clickedCoin.attr("id"); // Get the coin's id (e.g., 'ada', 'avax', etc.)
+    const coinId = $clickedCoin.attr("id"); // Get the coin's id 
     const coinName = $clickedCoin.data("name"); // Get the coin's name from data-name
     const coinImgSrc = $clickedCoin.attr("src");
-    // Dynamically update the curCoin div
+    // Update the curCoin div
     renderCurCoin(coinId, coinName, coinImgSrc)
      // Clear the chart and render all bars for the selected coin
     $(".chart").empty();
@@ -672,13 +667,12 @@ $("#root").on("mouseover", ".bar", function () {
 
 });
 
-// Optional: Add mouseout event to reset the currentCoin div when the mouse leaves the bar
+// Add mouseout event to reset the currentCoin div when the mouse leaves the bar
 $("#root").on("mouseout", ".bar", function () {
     const currentCoin = $("#curCoin img");
-    const coinId = currentCoin.attr("id"); // Get the coin's id (e.g., 'ada', 'avax', etc.)
+    const coinId = currentCoin.attr("id"); // Get the coin's id
     const coinName = currentCoin.data("name"); // Get the coin's name from data-name
     const coinImgSrc = currentCoin.attr("src");
-    // Dynamically update the curCoin div
     renderCurCoin(coinId, coinName, coinImgSrc)
 });
 
