@@ -1,8 +1,7 @@
 let states = {active: null}
 let current_profile = null
 
-localStorage.clear()
-let storedData = localStorage.getItem("states") 
+let storedData = localStorage.getItem("states")
 states =  storedData ? JSON.parse( storedData) :  { active: null, users : [
     {name: "Işık Dönger", wallet: {cash: 1000,  Cordana: 0,
         Avalanche: 0,
@@ -175,6 +174,7 @@ function renderProfile() {
  
 
 function renderWalletDay(user) {
+    console.log(user)
     let dayIndex = user.currentDay - 1;
     let coinData
     if (user.currentDay === 1) {
@@ -258,6 +258,7 @@ function renderWalletDay(user) {
 
 
 function renderTransactions () {
+    const user = states.users.find(user => user.name === current_profile);
 
     let currentCoin = $("#curCoin img").attr("id");
     let dayIndex = user.currentDay - 1;
@@ -307,6 +308,7 @@ function renderProfiles() {
 }
 
 function renderChartSliding(selectedCoin, day) {
+    const user = states.users.find(user => user.name === current_profile);
     const chartContainer = $(".chart");
     const chartHeight = 500; // Height of the chart container
 
@@ -655,6 +657,8 @@ $("#root").on("input", ".inp input" , function () {
 });
 
 $("#root").on("click", "#buySell", function () {
+    const user = states.users.find(user => user.name === current_profile);
+
     if ( $(this).hasClass("buyTime")) {
         if ($(".inp div span").text() === "") 
             alert("Input data");
